@@ -64,6 +64,7 @@ class ShoppingTimerDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppConstants.largeBorderRadius),
       ),
       title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.timer, color: Colors.orange.shade600),
           const SizedBox(width: 8),
@@ -117,39 +118,50 @@ class ShoppingTimerDialog extends StatelessWidget {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Close'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Close'),
+            ),
+            if (!timer.isRunning)
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange.shade600,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.defaultBorderRadius,
+                    ),
+                  ),
+                ),
+                onPressed: timer.start,
+                child: const Text(
+                  'Start',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            if (timer.isRunning)
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange.shade600,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.defaultBorderRadius,
+                    ),
+                  ),
+                ),
+                onPressed: timer.pause,
+                child: const Text(
+                  'Pause',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            TextButton(onPressed: timer.reset, child: const Text('Reset')),
+          ],
         ),
-        if (!timer.isRunning)
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange.shade600,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  AppConstants.defaultBorderRadius,
-                ),
-              ),
-            ),
-            onPressed: timer.start,
-            child: const Text('Start', style: TextStyle(color: Colors.white)),
-          ),
-        if (timer.isRunning)
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange.shade600,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  AppConstants.defaultBorderRadius,
-                ),
-              ),
-            ),
-            onPressed: timer.pause,
-            child: const Text('Pause', style: TextStyle(color: Colors.white)),
-          ),
-        TextButton(onPressed: timer.reset, child: const Text('Reset')),
       ],
     );
   }
