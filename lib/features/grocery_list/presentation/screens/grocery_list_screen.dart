@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:convert';
 
 import '../../../../core/constants/app_constants.dart';
 import '../providers/grocery_list_provider.dart';
 import '../widgets/grocery_app_bar.dart';
 import '../widgets/grocery_drawer.dart';
-import '../widgets/stats_cards.dart';
+import '../widgets/expandable_stats_card.dart';
 import '../widgets/search_bar.dart';
 import '../widgets/category_filter_bar.dart';
 import '../widgets/grocery_items_list.dart';
@@ -112,7 +114,7 @@ class _GroceryListScreenState extends State<GroceryListScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                StatsCards(groceryProvider: groceryProvider),
+                ExpandableStatsCard(groceryProvider: groceryProvider),
                 GrocerySearchBar(
                   controller: _searchController,
                   isSearching: _isSearching,
@@ -159,7 +161,7 @@ class _GroceryListScreenState extends State<GroceryListScreen>
         // TODO: Show templates dialog
         break;
       case 'share_list':
-        // TODO: Show share dialog
+        _shareGroceryList(provider);
         break;
       case 'clear_completed':
         provider.clearCompleted();
@@ -172,6 +174,40 @@ class _GroceryListScreenState extends State<GroceryListScreen>
       case 'save_to_history':
         // TODO: Save to history
         break;
+    }
+  }
+
+  void _shareGroceryList(GroceryListProvider provider) async {
+    if (provider.items.isEmpty) {
+      _showSnackBar('No items to share');
+      return;
+    }
+
+    final listData = {
+      'type': 'grocery_list',
+      'name': 'My Grocery List',
+      'created_at': DateTime.now().toIso8601String(),
+      'items': provider.items
+          .map(
+            (item) => {
+              'title': item.title,
+              'price': item.price,
+              'quantity': item.quantity,
+              'isChecked': item.isChecked,
+            },
+          )
+          .toList(),
+    };
+
+    final jsonString = json.encode(listData);
+
+    try {
+      await Share.share(
+        jsonString,
+        subject: 'My Grocery List - ${provider.items.length} items',
+      );
+    } catch (e) {
+      _showSnackBar('Sharing not available in simulator');
     }
   }
 
