@@ -1,4 +1,5 @@
 class GroceryItem {
+  final String id;
   final String title;
   final bool isChecked;
   final double price;
@@ -6,14 +7,17 @@ class GroceryItem {
   final DateTime createdAt;
 
   GroceryItem({
+    String? id,
     required this.title,
     this.isChecked = false,
     this.price = 0.0,
     this.quantity = 1,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : id = id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+       createdAt = createdAt ?? DateTime.now();
 
   GroceryItem copyWith({
+    String? id,
     String? title,
     bool? isChecked,
     double? price,
@@ -21,6 +25,7 @@ class GroceryItem {
     DateTime? createdAt,
   }) {
     return GroceryItem(
+      id: id ?? this.id,
       title: title ?? this.title,
       isChecked: isChecked ?? this.isChecked,
       price: price ?? this.price,
@@ -30,6 +35,7 @@ class GroceryItem {
   }
 
   Map<String, dynamic> toJson() => {
+    'id': id,
     'title': title,
     'isChecked': isChecked,
     'price': price,
@@ -38,6 +44,7 @@ class GroceryItem {
   };
 
   factory GroceryItem.fromJson(Map<String, dynamic> json) => GroceryItem(
+    id: json['id'],
     title: json['title'],
     isChecked: json['isChecked'] ?? false,
     price: (json['price'] ?? 0.0).toDouble(),
