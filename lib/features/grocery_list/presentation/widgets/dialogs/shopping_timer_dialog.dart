@@ -151,7 +151,8 @@ class _ShoppingTimerDialogState extends State<ShoppingTimerDialog> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.remove),
-                  onPressed: _isRunning || _duration.inMinutes <= 1
+
+                  onPressed: _isRunning || _duration.inMinutes <= 5
                       ? null
                       : () => _setDuration(
                           _duration - const Duration(minutes: 5),
@@ -163,7 +164,7 @@ class _ShoppingTimerDialogState extends State<ShoppingTimerDialog> {
                   onPressed: _isRunning
                       ? null
                       : () => _setDuration(
-                          _duration + const Duration(minutes: 1),
+                          _duration + const Duration(minutes: 5),
                         ),
                 ),
               ],
