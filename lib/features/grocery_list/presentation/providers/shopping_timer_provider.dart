@@ -42,6 +42,7 @@ class ShoppingTimerProvider extends ChangeNotifier {
   void reset() {
     _remaining = _duration;
     _isRunning = false;
+    _timer?.cancel();
     notifyListeners();
   }
 
