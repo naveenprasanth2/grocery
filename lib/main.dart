@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:grocery/features/grocery_list/presentation/providers/shopping_timer_provider.dart';
 import 'package:provider/provider.dart';
 import 'features/grocery_list/presentation/providers/grocery_list_provider.dart';
 import 'features/grocery_list/presentation/screens/grocery_list_screen.dart';
 import 'core/constants/app_constants.dart';
-
-// For backward compatibility with existing providers
-import 'package:grocery/provider/checklist_provider.dart' as legacy;
 import 'package:grocery/provider/expense_provider.dart';
 
 void main() {
@@ -14,9 +12,8 @@ void main() {
       providers: [
         // New refactored provider
         ChangeNotifierProvider(create: (context) => GroceryListProvider()),
-        // Keep existing providers for backward compatibility
-        ChangeNotifierProvider(create: (context) => legacy.CheckBoxModel()),
         ChangeNotifierProvider(create: (context) => ExpenseProvider()),
+        ChangeNotifierProvider(create: (_) => ShoppingTimerProvider()),
       ],
       child: const MyApp(),
     ),

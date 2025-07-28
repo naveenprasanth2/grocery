@@ -1,109 +1,10 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:provider/provider.dart';
 import 'package:grocery/core/constants/app_constants.dart';
+import '../../providers/shopping_timer_provider.dart';
 
-class ShoppingTimerDialog extends StatefulWidget {
+class ShoppingTimerDialog extends StatelessWidget {
   const ShoppingTimerDialog({super.key});
-
-  @override
-  State<ShoppingTimerDialog> createState() => _ShoppingTimerDialogState();
-}
-
-class _ShoppingTimerDialogState extends State<ShoppingTimerDialog> {
-  Duration _duration = const Duration(minutes: 45);
-  Duration _remaining = const Duration(minutes: 45);
-  Timer? _timer;
-  bool _isRunning = false;
-  final AudioPlayer _audioPlayer = AudioPlayer();
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
-  void _startTimer() {
-    if (_remaining.inSeconds == 0) return;
-    setState(() => _isRunning = true);
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remaining.inSeconds > 0) {
-        setState(() => _remaining -= const Duration(seconds: 1));
-      } else {
-        timer.cancel();
-        setState(() => _isRunning = false);
-        _playAlarm();
-        _showAlarmDialog();
-      }
-    });
-  }
-
-  void _pauseTimer() {
-    _timer?.cancel();
-    setState(() => _isRunning = false);
-  }
-
-  void _resetTimer() {
-    _timer?.cancel();
-    setState(() {
-      _remaining = _duration;
-      _isRunning = false;
-    });
-  }
-
-  void _setDuration(Duration newDuration) {
-    _timer?.cancel();
-    setState(() {
-      _duration = newDuration;
-      _remaining = newDuration;
-      _isRunning = false;
-    });
-  }
-
-  Future<void> _playAlarm() async {
-    await _audioPlayer.play(AssetSource('alarm.mp3'));
-  }
-
-  void _showAlarmDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.largeBorderRadius),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.alarm, color: Colors.red.shade600),
-            const SizedBox(width: 8),
-            const Text('Time is up!'),
-          ],
-        ),
-        content: const Text('Shopping time is over!'),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade600,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  AppConstants.defaultBorderRadius,
-                ),
-              ),
-            ),
-            onPressed: () {
-              _audioPlayer.stop();
-              Navigator.pop(context);
-            },
-            child: const Text(
-              'Stop Alarm',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   String _formatDuration(Duration d) {
     final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
@@ -114,6 +15,7 @@ class _ShoppingTimerDialogState extends State<ShoppingTimerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final timer = Provider.of<ShoppingTimerProvider>(context);
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.largeBorderRadius),
@@ -133,7 +35,7 @@ class _ShoppingTimerDialogState extends State<ShoppingTimerDialog> {
             Icon(Icons.timer, size: 60, color: Colors.orange.shade600),
             const SizedBox(height: 16),
             Text(
-              _formatDuration(_remaining),
+              _formatDuration(timer.remaining),
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -151,20 +53,19 @@ class _ShoppingTimerDialogState extends State<ShoppingTimerDialog> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.remove),
-
-                  onPressed: _isRunning || _duration.inMinutes <= 5
+                  onPressed: timer.isRunning || timer.duration.inMinutes <= 5
                       ? null
-                      : () => _setDuration(
-                          _duration - const Duration(minutes: 5),
+                      : () => timer.setDuration(
+                          timer.duration - const Duration(minutes: 5),
                         ),
                 ),
-                Text('${_duration.inMinutes} min'),
+                Text('${timer.duration.inMinutes} min'),
                 IconButton(
                   icon: const Icon(Icons.add),
-                  onPressed: _isRunning
+                  onPressed: timer.isRunning
                       ? null
-                      : () => _setDuration(
-                          _duration + const Duration(minutes: 5),
+                      : () => timer.setDuration(
+                          timer.duration + const Duration(minutes: 5),
                         ),
                 ),
               ],
@@ -175,12 +76,11 @@ class _ShoppingTimerDialogState extends State<ShoppingTimerDialog> {
       actions: [
         TextButton(
           onPressed: () {
-            _pauseTimer();
             Navigator.pop(context);
           },
           child: const Text('Close'),
         ),
-        if (!_isRunning)
+        if (!timer.isRunning)
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange.shade600,
@@ -190,10 +90,10 @@ class _ShoppingTimerDialogState extends State<ShoppingTimerDialog> {
                 ),
               ),
             ),
-            onPressed: _startTimer,
+            onPressed: timer.start,
             child: const Text('Start', style: TextStyle(color: Colors.white)),
           ),
-        if (_isRunning)
+        if (timer.isRunning)
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange.shade600,
@@ -203,10 +103,10 @@ class _ShoppingTimerDialogState extends State<ShoppingTimerDialog> {
                 ),
               ),
             ),
-            onPressed: _pauseTimer,
+            onPressed: timer.pause,
             child: const Text('Pause', style: TextStyle(color: Colors.white)),
           ),
-        TextButton(onPressed: _resetTimer, child: const Text('Reset')),
+        TextButton(onPressed: timer.reset, child: const Text('Reset')),
       ],
     );
   }
