@@ -18,6 +18,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late AnimationController _listAnimationController;
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;
+  String _selectedCategoryFilter = 'All';
+  bool _showOnlyUnchecked = false;
 
   // Smart suggestions for grocery items
   final List<String> _suggestions = [
@@ -47,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   ];
 
   final Map<String, IconData> _categoryIcons = {
+    'All': Icons.apps,
     'Dairy': Icons.local_drink,
     'Meat': Icons.set_meal,
     'Fruits': Icons.apple,
@@ -113,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           children: [
             _buildStatsCards(tileList),
             _buildSearchBar(),
+            _buildCategoryFilterBar(),
             Expanded(
               child: tileList.items.isEmpty
                   ? _buildEmptyState()
@@ -150,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             style: TextStyle(
               color: Colors.green.shade800,
               fontWeight: FontWeight.bold,
-              fontSize: 22,
+              fontSize: 16,
               letterSpacing: 0.5,
             ),
           ),
@@ -161,6 +165,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(18)),
       ),
       actions: [
+        IconButton(
+          icon: Icon(Icons.qr_code_scanner, color: Colors.green.shade700),
+          onPressed: () => _showBarcodeScanDialog(),
+          tooltip: 'Scan Barcode',
+        ),
+        IconButton(
+          icon: Icon(Icons.timer, color: Colors.green.shade700),
+          onPressed: () => _showShoppingTimerDialog(),
+          tooltip: 'Shopping Timer',
+        ),
         IconButton(
           icon: Icon(Icons.search, color: Colors.green.shade700),
           onPressed: () {
@@ -173,6 +187,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           icon: Icon(Icons.more_vert, color: Colors.green.shade700),
           onSelected: (value) {
             switch (value) {
+              case 'templates':
+                _showTemplatesDialog();
+                break;
+              case 'share_list':
+                _shareShoppingList();
+                break;
               case 'clear_completed':
                 // Clear completed items
                 for (int i = tileList.items.length - 1; i >= 0; i--) {
@@ -193,6 +213,26 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             }
           },
           itemBuilder: (context) => [
+            PopupMenuItem(
+              value: 'templates',
+              child: Row(
+                children: [
+                  Icon(Icons.bookmark, color: Colors.blue),
+                  SizedBox(width: 8),
+                  Text('Shopping Templates'),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              value: 'share_list',
+              child: Row(
+                children: [
+                  Icon(Icons.share, color: Colors.teal),
+                  SizedBox(width: 8),
+                  Text('Share List'),
+                ],
+              ),
+            ),
             PopupMenuItem(
               value: 'save_to_history',
               child: Row(
@@ -381,6 +421,80 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildCategoryFilterBar() {
+    return Container(
+      height: 60,
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _categoryIcons.keys.length,
+              itemBuilder: (context, index) {
+                final category = _categoryIcons.keys.elementAt(index);
+                final isSelected = _selectedCategoryFilter == category;
+                return Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    selected: isSelected,
+                    label: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _categoryIcons[category],
+                          size: 18,
+                          color: isSelected
+                              ? Colors.white
+                              : Colors.grey.shade600,
+                        ),
+                        SizedBox(width: 4),
+                        Text(category),
+                      ],
+                    ),
+                    onSelected: (selected) {
+                      setState(() {
+                        _selectedCategoryFilter = selected ? category : 'All';
+                      });
+                    },
+                    selectedColor: Colors.green.shade600,
+                    backgroundColor: Colors.grey.shade100,
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : Colors.grey.shade700,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: _showOnlyUnchecked
+                  ? Colors.orange.shade600
+                  : Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: IconButton(
+              icon: Icon(
+                Icons.checklist_rtl,
+                color: _showOnlyUnchecked ? Colors.white : Colors.grey.shade600,
+              ),
+              onPressed: () {
+                setState(() {
+                  _showOnlyUnchecked = !_showOnlyUnchecked;
+                });
+              },
+              tooltip: 'Show only pending items',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -526,7 +640,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             title: Text('About'),
             onTap: () {
               Navigator.pop(context);
-              _showAboutDialog(context);
+              _showAboutDialog();
             },
           ),
         ],
@@ -647,60 +761,64 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
-  void _showAboutDialog(BuildContext context) {
-    showDialog(
+  void _showAboutDialog() {
+    showAboutDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Icon(Icons.info, color: Colors.blue.shade600),
-            SizedBox(width: 8),
-            Text('About Smart Grocery'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Smart Grocery v1.0.0',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'A comprehensive grocery list app with expense tracking and shopping history.',
-            ),
-            SizedBox(height: 16),
-            Text('Features:', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text('• Smart grocery list management'),
-            Text('• Expense tracking'),
-            Text('• Shopping history'),
-            Text('• Category organization'),
-            Text('• Price tracking'),
-            SizedBox(height: 16),
-            Text(
-              'Made with ❤️ using Flutter',
-              style: TextStyle(color: Colors.grey.shade600),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
+      applicationName: 'Smart Grocery',
+      applicationVersion: '2.0.0',
+      applicationIcon: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.green.shade400, Colors.green.shade600],
           ),
-        ],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(Icons.shopping_cart, color: Colors.white, size: 32),
       ),
+      children: [
+        Text(
+          'A modern, feature-rich grocery shopping app with smart organization.',
+        ),
+        SizedBox(height: 16),
+        Text('Features:'),
+        Text('• Smart categorization'),
+        Text('• Barcode scanning'),
+        Text('• Shopping templates'),
+        Text('• List sharing'),
+        Text('• Shopping timer'),
+        Text('• Beautiful modern UI'),
+      ],
     );
   }
 
   Widget _buildItemsList(CheckBoxModel tileList, BuildContext context) {
     var filteredItems = tileList.items.asMap().entries.where((entry) {
-      if (_searchController.text.isEmpty) return true;
-      return entry.value.title.toLowerCase().contains(
-        _searchController.text.toLowerCase(),
-      );
+      final item = entry.value;
+
+      // Text search filter
+      if (_searchController.text.isNotEmpty) {
+        if (!item.title.toLowerCase().contains(
+          _searchController.text.toLowerCase(),
+        )) {
+          return false;
+        }
+      }
+
+      // Category filter
+      if (_selectedCategoryFilter != 'All') {
+        final category = _categorizeItem(item.title);
+        if (category != _selectedCategoryFilter) {
+          return false;
+        }
+      }
+
+      // Show only unchecked filter
+      if (_showOnlyUnchecked && item.isChecked) {
+        return false;
+      }
+
+      return true;
     }).toList();
 
     return RefreshIndicator(
@@ -1126,6 +1244,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     TextEditingController priceController,
     CheckBoxModel tileList,
   ) {
+    String selectedCategory = 'Other';
+    bool isUrgent = false;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1136,8 +1257,19 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             return AnimatedContainer(
               duration: Duration(milliseconds: 300),
               decoration: BoxDecoration(
-                color: Colors.white,
+                gradient: LinearGradient(
+                  colors: [Colors.white, Colors.green.shade50],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 20,
+                    offset: Offset(0, -5),
+                  ),
+                ],
               ),
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -1160,155 +1292,559 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ),
                   Row(
                     children: [
-                      Icon(
-                        Icons.add_shopping_cart,
-                        color: Colors.green.shade600,
-                        size: 28,
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.green.shade400,
+                              Colors.green.shade600,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.shade200,
+                              blurRadius: 8,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.add_shopping_cart,
+                          color: Colors.white,
+                          size: 28,
+                        ),
                       ),
-                      SizedBox(width: 12),
-                      Text(
-                        'Add New Item',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Add New Item',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade800,
+                              ),
+                            ),
+                            Text(
+                              'Add items to your smart grocery list',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 24),
-                  TextField(
-                    controller: nameController,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      labelText: 'What do you need?',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      prefixIcon: Icon(Icons.shopping_basket_outlined),
-                      filled: true,
-                      fillColor: Colors.grey.shade50,
+
+                  // Item Name Field
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade200,
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
                     ),
-                    textInputAction: TextInputAction.next,
-                    onChanged: (value) => setModalState(() {}),
+                    child: TextField(
+                      controller: nameController,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        labelText: 'What do you need?',
+                        labelStyle: TextStyle(color: Colors.green.shade600),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.shopping_basket_outlined,
+                          color: Colors.green.shade600,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(
+                            color: Colors.green.shade600,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) => setModalState(() {}),
+                    ),
                   ),
+
                   SizedBox(height: 16),
+
+                  // Quantity and Price Row
                   Row(
                     children: [
                       Expanded(
-                        child: TextField(
-                          controller: quantityController,
-                          decoration: InputDecoration(
-                            labelText: 'Quantity',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            prefixIcon: Icon(Icons.numbers),
-                            filled: true,
-                            fillColor: Colors.grey.shade50,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.shade200,
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
+                              ),
+                            ],
                           ),
-                          keyboardType: TextInputType.number,
-                          textInputAction: TextInputAction.next,
-                          onChanged: (value) => setModalState(() {}),
+                          child: TextField(
+                            controller: quantityController,
+                            decoration: InputDecoration(
+                              labelText: 'Quantity',
+                              labelStyle: TextStyle(
+                                color: Colors.orange.shade600,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.numbers,
+                                color: Colors.orange.shade600,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(
+                                  color: Colors.orange.shade600,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (value) => setModalState(() {}),
+                          ),
                         ),
                       ),
                       SizedBox(width: 12),
                       Expanded(
-                        child: TextField(
-                          controller: priceController,
-                          decoration: InputDecoration(
-                            labelText: 'Price (optional)',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            prefixIcon: Icon(Icons.attach_money),
-                            filled: true,
-                            fillColor: Colors.grey.shade50,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.shade200,
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
+                              ),
+                            ],
                           ),
-                          keyboardType: TextInputType.numberWithOptions(
-                            decimal: true,
+                          child: TextField(
+                            controller: priceController,
+                            decoration: InputDecoration(
+                              labelText: 'Price',
+                              labelStyle: TextStyle(
+                                color: Colors.purple.shade600,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.attach_money,
+                                color: Colors.purple.shade600,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(
+                                  color: Colors.purple.shade600,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            keyboardType: TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
+
+                  SizedBox(height: 16),
+
+                  // Category Selection
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade200,
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Category',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children:
+                              [
+                                'Dairy',
+                                'Meat',
+                                'Fruits',
+                                'Vegetables',
+                                'Grains',
+                                'Beverages',
+                                'Other',
+                              ].map((category) {
+                                final isSelected = selectedCategory == category;
+                                return GestureDetector(
+                                  onTap: () {
+                                    setModalState(() {
+                                      selectedCategory = category;
+                                    });
+                                  },
+                                  child: AnimatedContainer(
+                                    duration: Duration(milliseconds: 200),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: isSelected
+                                          ? LinearGradient(
+                                              colors: [
+                                                _getCategoryColor(
+                                                  category,
+                                                ).withOpacity(0.8),
+                                                _getCategoryColor(category),
+                                              ],
+                                            )
+                                          : null,
+                                      color: isSelected
+                                          ? null
+                                          : Colors.grey.shade100,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? _getCategoryColor(category)
+                                            : Colors.grey.shade300,
+                                        width: isSelected ? 2 : 1,
+                                      ),
+                                      boxShadow: isSelected
+                                          ? [
+                                              BoxShadow(
+                                                color: _getCategoryColor(
+                                                  category,
+                                                ).withOpacity(0.3),
+                                                blurRadius: 8,
+                                                offset: Offset(0, 4),
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          _categoryIcons[category],
+                                          size: 16,
+                                          color: isSelected
+                                              ? Colors.white
+                                              : _getCategoryColor(category),
+                                        ),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          category,
+                                          style: TextStyle(
+                                            color: isSelected
+                                                ? Colors.white
+                                                : Colors.grey.shade700,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w600
+                                                : FontWeight.normal,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Urgent Toggle
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade200,
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.priority_high,
+                          color: isUrgent
+                              ? Colors.red.shade600
+                              : Colors.grey.shade400,
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Mark as urgent',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                        ),
+                        Switch(
+                          value: isUrgent,
+                          onChanged: (value) {
+                            setModalState(() {
+                              isUrgent = value;
+                            });
+                          },
+                          activeColor: Colors.red.shade600,
+                        ),
+                      ],
+                    ),
+                  ),
+
                   if (nameController.text.isEmpty) ...[
                     SizedBox(height: 20),
-                    Text(
-                      'Quick suggestions:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: Colors.blue.shade200),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.lightbulb,
+                                color: Colors.blue.shade600,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Quick suggestions:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.blue.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _suggestions.take(6).map((suggestion) {
+                              return GestureDetector(
+                                onTap: () {
+                                  nameController.text = suggestion;
+                                  quantityController.text = '1';
+                                  setModalState(() {});
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.green.shade400,
+                                        Colors.green.shade600,
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.green.shade200,
+                                        blurRadius: 6,
+                                        offset: Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    suggestion,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: _suggestions.take(6).map((suggestion) {
-                        return ActionChip(
-                          label: Text(suggestion),
-                          onPressed: () {
-                            nameController.text = suggestion;
-                            quantityController.text = '1';
-                            setModalState(() {});
-                          },
-                          backgroundColor: Colors.green.shade50,
-                          labelStyle: TextStyle(color: Colors.green.shade700),
-                        );
-                      }).toList(),
-                    ),
                   ],
+
                   SizedBox(height: 24),
+
+                  // Action Buttons
                   Row(
                     children: [
                       Expanded(
                         child: TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: Text('Cancel', style: TextStyle(fontSize: 16)),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
                         ),
                       ),
                       SizedBox(width: 12),
                       Expanded(
                         flex: 2,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green.shade600,
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors:
+                                  nameController.text.trim().isNotEmpty &&
+                                      quantityController.text.trim().isNotEmpty
+                                  ? [
+                                      Colors.green.shade500,
+                                      Colors.green.shade700,
+                                    ]
+                                  : [
+                                      Colors.grey.shade300,
+                                      Colors.grey.shade400,
+                                    ],
                             ),
-                          ),
-                          onPressed:
-                              nameController.text.trim().isNotEmpty &&
-                                  quantityController.text.trim().isNotEmpty
-                              ? () {
-                                  final priceText =
-                                      priceController.text.trim().isNotEmpty
-                                      ? ' - \$${priceController.text.trim()}'
-                                      : '';
-                                  tileList.addItem(
-                                    '${nameController.text.trim()} (${quantityController.text.trim()})$priceText',
-                                  );
-                                  nameController.clear();
-                                  quantityController.clear();
-                                  priceController.clear();
-                                  Navigator.pop(context);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        '${nameController.text} added to your list!',
-                                      ),
-                                      backgroundColor: Colors.green.shade600,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow:
+                                nameController.text.trim().isNotEmpty &&
+                                    quantityController.text.trim().isNotEmpty
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.green.shade300,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 5),
                                     ),
-                                  );
-                                }
-                              : null,
-                          child: Text(
-                            'Add to List',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                                  ]
+                                : null,
+                          ),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            onPressed:
+                                nameController.text.trim().isNotEmpty &&
+                                    quantityController.text.trim().isNotEmpty
+                                ? () {
+                                    String itemTitle = nameController.text
+                                        .trim();
+                                    if (isUrgent) {
+                                      itemTitle = '🔥 $itemTitle';
+                                    }
+
+                                    final price =
+                                        double.tryParse(
+                                          priceController.text.trim(),
+                                        ) ??
+                                        0.0;
+                                    final quantity =
+                                        int.tryParse(
+                                          quantityController.text.trim(),
+                                        ) ??
+                                        1;
+
+                                    tileList.addItem(
+                                      itemTitle,
+                                      price: price,
+                                      quantity: quantity,
+                                    );
+
+                                    nameController.clear();
+                                    quantityController.clear();
+                                    priceController.clear();
+                                    Navigator.pop(context);
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.check_circle,
+                                              color: Colors.white,
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text('Item added to your list!'),
+                                          ],
+                                        ),
+                                        backgroundColor: Colors.green.shade600,
+                                        behavior: SnackBarBehavior.floating,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                : null,
+                            child: Text(
+                              'Add to List',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),
@@ -1322,6 +1858,315 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           },
         );
       },
+    );
+  }
+
+  void _showBarcodeScanDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.qr_code_scanner, color: Colors.blue.shade600),
+            SizedBox(width: 8),
+            Text('Scan Barcode'),
+          ],
+        ),
+        content: Container(
+          height: 200,
+          width: 200,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade300, width: 2),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.qr_code_scanner,
+                size: 80,
+                color: Colors.grey.shade400,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Camera scanner would\nopen here',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue.shade600,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              // Simulate adding a scanned item
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text('Product scanned successfully!'),
+                    ],
+                  ),
+                  backgroundColor: Colors.green.shade600,
+                ),
+              );
+            },
+            child: Text('Simulate Scan', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showShoppingTimerDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.timer, color: Colors.orange.shade600),
+            SizedBox(width: 8),
+            Text('Shopping Timer'),
+          ],
+        ),
+        content: Container(
+          height: 150,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.timer, size: 60, color: Colors.orange.shade600),
+              SizedBox(height: 16),
+              Text(
+                '45:30',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange.shade600,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Shopping time',
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange.shade600,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Timer started! Happy shopping!'),
+                  backgroundColor: Colors.orange.shade600,
+                ),
+              );
+            },
+            child: Text('Start Timer', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTemplatesDialog() {
+    final templates = [
+      {
+        'name': 'Weekly Groceries',
+        'items': ['Milk', 'Bread', 'Eggs', 'Fruits', 'Vegetables'],
+      },
+      {
+        'name': 'Party Supplies',
+        'items': ['Chips', 'Drinks', 'Cake', 'Ice cream', 'Napkins'],
+      },
+      {
+        'name': 'Breakfast Essentials',
+        'items': ['Cereal', 'Milk', 'Bananas', 'Coffee', 'Yogurt'],
+      },
+      {
+        'name': 'Cooking Basics',
+        'items': ['Oil', 'Salt', 'Spices', 'Onions', 'Garlic'],
+      },
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.bookmark, color: Colors.purple.shade600),
+            SizedBox(width: 8),
+            Text('Shopping Templates'),
+          ],
+        ),
+        content: Container(
+          width: double.maxFinite,
+          height: 300,
+          child: ListView.builder(
+            itemCount: templates.length,
+            itemBuilder: (context, index) {
+              final template = templates[index];
+              return Card(
+                margin: EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.purple.shade600,
+                    child: Icon(Icons.list, color: Colors.white),
+                  ),
+                  title: Text(
+                    template['name'] as String,
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text(
+                    '${(template['items'] as List).length} items',
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _loadTemplate(template['items'] as List<String>);
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _loadTemplate(List<String> items) {
+    final tileList = Provider.of<CheckBoxModel>(context, listen: false);
+    for (String item in items) {
+      tileList.addItem('$item (1)');
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white),
+            SizedBox(width: 8),
+            Text('Template loaded! ${items.length} items added.'),
+          ],
+        ),
+        backgroundColor: Colors.purple.shade600,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  void _shareShoppingList() {
+    final tileList = Provider.of<CheckBoxModel>(context, listen: false);
+    final items = tileList.items;
+
+    if (items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Your shopping list is empty!'),
+          backgroundColor: Colors.orange.shade600,
+        ),
+      );
+      return;
+    }
+
+    String shareText = '🛒 My Shopping List:\n\n';
+    for (int i = 0; i < items.length; i++) {
+      final item = items[i];
+      shareText += '${i + 1}. ${item.title} ${item.isChecked ? '✅' : '⭕'}\n';
+    }
+    shareText += '\nShared from My Grocery App 📱';
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.share, color: Colors.blue.shade600),
+            SizedBox(width: 8),
+            Text('Share Shopping List'),
+          ],
+        ),
+        content: Container(
+          height: 200,
+          child: SingleChildScrollView(
+            child: Text(shareText, style: TextStyle(fontSize: 14)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue.shade600,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text('Shopping list shared successfully!'),
+                    ],
+                  ),
+                  backgroundColor: Colors.green.shade600,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              );
+            },
+            child: Text('Share', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 }
