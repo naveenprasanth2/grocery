@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/expense_provider.dart';
-import '../models/models.dart';
 import 'package:intl/intl.dart';
 
 class ExpenseScreen extends StatefulWidget {
+  const ExpenseScreen({super.key});
+
   @override
-  _ExpenseScreenState createState() => _ExpenseScreenState();
+  State<ExpenseScreen> createState() => _ExpenseScreenState();
 }
 
 class _ExpenseScreenState extends State<ExpenseScreen> {
