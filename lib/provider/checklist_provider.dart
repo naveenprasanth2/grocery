@@ -2,14 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:grocery/provider/title_item.dart';
 
 class CheckBoxModel extends ChangeNotifier {
-  void updateItem(int index, String newTitle) {
-    _items[index] = TileItem(
-      title: newTitle,
-      isChecked: _items[index].isChecked,
-    );
-    notifyListeners();
-  }
-
   final List<TileItem> _items = [];
 
   List<TileItem> get items => _items;
@@ -18,6 +10,19 @@ class CheckBoxModel extends ChangeNotifier {
 
   void addItem(String title) {
     _items.add(TileItem(title: title));
+    notifyListeners();
+  }
+
+  void deleteItem(int index) {
+    _items.removeAt(index);
+    notifyListeners();
+  }
+
+  void updateItem(int index, String newTitle) {
+    _items[index] = TileItem(
+      title: newTitle,
+      isChecked: _items[index].isChecked,
+    );
     notifyListeners();
   }
 
