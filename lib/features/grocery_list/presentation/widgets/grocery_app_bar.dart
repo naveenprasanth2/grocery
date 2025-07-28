@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_constants.dart';
+import 'dialogs/shopping_timer_dialog.dart';
 
 class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onSearchToggle;
@@ -197,70 +198,7 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
   void _showShoppingTimerDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.largeBorderRadius),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.timer, color: Colors.orange.shade600),
-            const SizedBox(width: 8),
-            const Text('Shopping Timer'),
-          ],
-        ),
-        content: SizedBox(
-          height: 150,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.timer, size: 60, color: Colors.orange.shade600),
-              const SizedBox(height: 16),
-              Text(
-                '45:30',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange.shade600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Shopping time',
-                style: TextStyle(color: Colors.grey.shade600),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange.shade600,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  AppConstants.defaultBorderRadius,
-                ),
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Timer started! Happy shopping!'),
-                  backgroundColor: Colors.orange.shade600,
-                ),
-              );
-            },
-            child: const Text(
-              'Start Timer',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
+      builder: (context) => const ShoppingTimerDialog(),
     );
   }
 

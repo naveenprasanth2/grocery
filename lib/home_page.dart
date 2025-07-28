@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 
 /// Legacy home page - keeping for reference during refactoring
 /// This will be replaced by the new refactored components
-class LegacyHomePage extends StatefulWidget {
+class MyHomePage extends StatefulWidget {
   final String title;
-  const LegacyHomePage({required this.title, super.key});
+  const MyHomePage({required this.title, super.key});
 
   @override
-  State<LegacyHomePage> createState() => _LegacyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _LegacyHomePageState extends State<LegacyHomePage>
-    with TickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late AnimationController _fabAnimationController;
   late AnimationController _listAnimationController;
   final TextEditingController _searchController = TextEditingController();
