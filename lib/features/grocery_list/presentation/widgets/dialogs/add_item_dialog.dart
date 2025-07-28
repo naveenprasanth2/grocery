@@ -32,16 +32,11 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: AppConstants.shortAnimationDuration,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.white, Colors.green.shade50],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
-        boxShadow: const [
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+        boxShadow: [
           BoxShadow(
             color: Colors.black26,
             blurRadius: 20,
@@ -55,33 +50,86 @@ class _AddItemDialogState extends State<AddItemDialog> {
         right: 20,
         top: 20,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            width: 50,
-            height: 5,
-            margin: const EdgeInsets.only(bottom: 20),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(10),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.grey, size: 28),
+                  onPressed: () => Navigator.of(context).pop(),
+                  tooltip: 'Close',
+                ),
+              ],
             ),
-          ),
-          _buildHeader(),
-          const SizedBox(height: 24),
-          _buildNameField(),
-          const SizedBox(height: 16),
-          _buildQuantityAndPriceRow(),
-          const SizedBox(height: 16),
-          _buildCategorySelection(),
-          const SizedBox(height: 16),
-          _buildUrgentToggle(),
-          if (_nameController.text.isEmpty) _buildSuggestions(),
-          const SizedBox(height: 24),
-          _buildActionButtons(),
-          const SizedBox(height: 20),
-        ],
+            Flexible(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 5,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    _buildHeader(),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(child: _buildNameField()),
+                        const SizedBox(width: 8),
+                        Tooltip(
+                          message: 'Mark as priority',
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.priority_high,
+                                  size: 18,
+                                  color: Colors.red,
+                                ),
+                                Switch(
+                                  value: _isUrgent,
+                                  onChanged: (value) =>
+                                      setState(() => _isUrgent = value),
+                                  activeColor: Colors.red.shade600,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _buildQuantityAndPriceRow(),
+                    const SizedBox(height: 16),
+                    _buildCategorySelection(),
+                    if (_nameController.text.isEmpty) _buildSuggestions(),
+                    const SizedBox(height: 24),
+                    _buildActionButtons(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -351,42 +399,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
     );
   }
 
-  Widget _buildUrgentToggle() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.priority_high,
-            color: _isUrgent ? Colors.red.shade600 : Colors.grey.shade400,
-          ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text(
-              'Mark as urgent',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-          Switch(
-            value: _isUrgent,
-            onChanged: (value) => setState(() => _isUrgent = value),
-            activeColor: Colors.red.shade600,
-          ),
-        ],
-      ),
-    );
-  }
+  // Removed _buildUrgentToggle; urgent toggle is now compact and next to the name field.
 
   Widget _buildSuggestions() {
     return Container(
