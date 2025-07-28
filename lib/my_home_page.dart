@@ -84,18 +84,24 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   String _categorizeItem(String itemName) {
     final name = itemName.toLowerCase();
-    if (['milk', 'cheese', 'butter', 'yogurt', 'cream'].any(name.contains))
+    if (['milk', 'cheese', 'butter', 'yogurt', 'cream'].any(name.contains)) {
       return 'Dairy';
-    if (['chicken', 'beef', 'pork', 'fish', 'meat'].any(name.contains))
+    }
+    if (['chicken', 'beef', 'pork', 'fish', 'meat'].any(name.contains)) {
       return 'Meat';
-    if (['apple', 'banana', 'orange', 'grape', 'berry'].any(name.contains))
+    }
+    if (['apple', 'banana', 'orange', 'grape', 'berry'].any(name.contains)) {
       return 'Fruits';
-    if (['tomato', 'onion', 'potato', 'carrot', 'lettuce'].any(name.contains))
+    }
+    if (['tomato', 'onion', 'potato', 'carrot', 'lettuce'].any(name.contains)) {
       return 'Vegetables';
-    if (['rice', 'bread', 'pasta', 'cereal', 'flour'].any(name.contains))
+    }
+    if (['rice', 'bread', 'pasta', 'cereal', 'flour'].any(name.contains)) {
       return 'Grains';
-    if (['coffee', 'tea', 'juice', 'soda', 'water'].any(name.contains))
+    }
+    if (['coffee', 'tea', 'juice', 'soda', 'water'].any(name.contains)) {
       return 'Beverages';
+    }
     return 'Other';
   }
 
