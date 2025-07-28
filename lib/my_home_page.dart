@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:grocery/provider/checklist_provider.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -129,188 +128,230 @@ class MyHomePage extends StatelessWidget {
                         style: TextStyle(color: Colors.grey),
                       ),
                     )
-                  : ListView.separated(
+                  : ReorderableListView.builder(
                       padding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 8,
                       ),
                       itemCount: tileList.items.length,
-                      separatorBuilder: (context, idx) => SizedBox(height: 10),
+                      onReorder: (oldIndex, newIndex) {
+                        if (newIndex > oldIndex) newIndex -= 1;
+                        tileList.moveItem(oldIndex, newIndex);
+                      },
                       itemBuilder: (context, index) {
                         final item = tileList.items[index];
                         return Card(
+                          key: ValueKey(item.title + index.toString()),
                           elevation: 2,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: item.isChecked
-                                  ? Colors.green.shade200
-                                  : Colors.yellow.shade600,
-                              child: Icon(Icons.food_bank, color: Colors.white),
-                            ),
-                            title: Text(
-                              item.title,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                decoration: item.isChecked
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                                color: item.isChecked
-                                    ? Colors.grey
-                                    : Colors.black,
-                              ),
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.edit,
-                                    color: Colors.blueGrey,
+                          child: Row(
+                            children: [
+                              ReorderableDragStartListener(
+                                index: index,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
                                   ),
-                                  tooltip: 'Edit',
-                                  onPressed: () {
-                                    final editNameController =
-                                        TextEditingController(
-                                          text: item.title.split(' (').first,
-                                        );
-                                    final editQuantityController =
-                                        TextEditingController(
-                                          text: item.title.contains('(')
-                                              ? item.title
-                                                    .split('(')
-                                                    .last
-                                                    .replaceAll(')', '')
-                                              : '',
-                                        );
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        final width =
-                                            MediaQuery.of(context).size.width *
-                                            0.8;
-                                        return AlertDialog(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                          ),
-                                          title: Text(
-                                            'Edit Item',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          content: SizedBox(
-                                            width: width,
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                TextField(
-                                                  controller:
-                                                      editNameController,
-                                                  decoration: InputDecoration(
-                                                    labelText: 'Item name',
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                  ),
-                                                  textInputAction:
-                                                      TextInputAction.next,
-                                                ),
-                                                SizedBox(height: 12),
-                                                TextField(
-                                                  controller:
-                                                      editQuantityController,
-                                                  decoration: InputDecoration(
-                                                    labelText: 'Quantity',
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('Cancel'),
-                                            ),
-                                            ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    Colors.green.shade600,
+                                  child: Icon(
+                                    Icons.drag_handle_outlined,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.only(
+                                    left: 0,
+                                    right: 8,
+                                  ),
+                                  leading: CircleAvatar(
+                                    backgroundColor: item.isChecked
+                                        ? Colors.green.shade200
+                                        : Colors.yellow.shade600,
+                                    child: Icon(
+                                      Icons.food_bank,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    item.title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      decoration: item.isChecked
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      color: item.isChecked
+                                          ? Colors.grey
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.edit,
+                                          color: Colors.blueGrey,
+                                        ),
+                                        tooltip: 'Edit',
+                                        onPressed: () {
+                                          final editNameController =
+                                              TextEditingController(
+                                                text: item.title
+                                                    .split(' (')
+                                                    .first,
+                                              );
+                                          final editQuantityController =
+                                              TextEditingController(
+                                                text: item.title.contains('(')
+                                                    ? item.title
+                                                          .split('(')
+                                                          .last
+                                                          .replaceAll(')', '')
+                                                    : '',
+                                              );
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              final width =
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.8;
+                                              return AlertDialog(
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
-                                                      BorderRadius.circular(8),
+                                                      BorderRadius.circular(16),
                                                 ),
-                                              ),
-                                              onPressed: () {
-                                                if (editNameController.text
-                                                        .trim()
-                                                        .isNotEmpty &&
-                                                    editQuantityController.text
-                                                        .trim()
-                                                        .isNotEmpty) {
-                                                  tileList.updateItem(
-                                                    index,
-                                                    '${editNameController.text.trim()} (${editQuantityController.text.trim()})',
-                                                  );
-                                                  Navigator.pop(context);
-                                                }
-                                              },
-                                              child: Text('Update'),
+                                                title: Text(
+                                                  'Edit Item',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                content: SizedBox(
+                                                  width: width,
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      TextField(
+                                                        controller:
+                                                            editNameController,
+                                                        decoration: InputDecoration(
+                                                          labelText:
+                                                              'Item name',
+                                                          border:
+                                                              OutlineInputBorder(),
+                                                        ),
+                                                        textInputAction:
+                                                            TextInputAction
+                                                                .next,
+                                                      ),
+                                                      SizedBox(height: 12),
+                                                      TextField(
+                                                        controller:
+                                                            editQuantityController,
+                                                        decoration: InputDecoration(
+                                                          labelText: 'Quantity',
+                                                          border:
+                                                              OutlineInputBorder(),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text('Cancel'),
+                                                  ),
+                                                  ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor:
+                                                          Colors.green.shade600,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      if (editNameController
+                                                              .text
+                                                              .trim()
+                                                              .isNotEmpty &&
+                                                          editQuantityController
+                                                              .text
+                                                              .trim()
+                                                              .isNotEmpty) {
+                                                        tileList.updateItem(
+                                                          index,
+                                                          '${editNameController.text.trim()} (${editQuantityController.text.trim()})',
+                                                        );
+                                                        Navigator.pop(context);
+                                                      }
+                                                    },
+                                                    child: Text('Update'),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                      Checkbox(
+                                        value: item.isChecked,
+                                        activeColor: Colors.green,
+                                        onChanged: (bool? value) {
+                                          if (value != null) {
+                                            tileList.toggle(index, value);
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  onLongPress: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text('Delete Item'),
+                                        content: Text(
+                                          'Are you sure you want to delete this item?',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('Cancel'),
+                                          ),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red,
                                             ),
-                                          ],
-                                        );
-                                      },
+                                            onPressed: () {
+                                              tileList.deleteItem(index);
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     );
                                   },
                                 ),
-                                Checkbox(
-                                  value: item.isChecked,
-                                  activeColor: Colors.green,
-                                  onChanged: (bool? value) {
-                                    if (value != null) {
-                                      tileList.toggle(index, value);
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                            onLongPress: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text('Delete Item'),
-                                  content: Text(
-                                    'Are you sure you want to delete this item?',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text('Cancel'),
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                      ),
-                                      onPressed: () {
-                                        tileList.deleteItem(index);
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        'Delete',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
+                              ),
+                            ],
                           ),
                         );
                       },
