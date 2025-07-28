@@ -449,6 +449,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           final category = _categorizeItem(item.title);
 
           return SlideTransition(
+            key: ValueKey('slide_${item.title}_$actualIndex'),
             position: Tween<Offset>(begin: Offset(1, 0), end: Offset.zero)
                 .animate(
                   CurvedAnimation(
@@ -461,7 +462,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ),
                 ),
             child: Card(
-              key: ValueKey(item.title + actualIndex.toString()),
+              key: ValueKey('card_${item.title}_$actualIndex'),
               margin: EdgeInsets.only(bottom: 12),
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -484,6 +485,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     ReorderableDragStartListener(
                       index: index,
                       child: Container(
+                        key: ValueKey('drag_handle_${item.title}_$actualIndex'),
                         padding: EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 20,
@@ -496,10 +498,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       ),
                     ),
                     Expanded(
+                      key: ValueKey('expanded_${item.title}_$actualIndex'),
                       child: ListTile(
+                        key: ValueKey('list_tile_${item.title}_$actualIndex'),
                         contentPadding: EdgeInsets.only(left: 0, right: 16),
                         leading: Hero(
-                          tag: 'avatar_${item.title}_$actualIndex',
+                          tag: 'avatar_${item.title.hashCode}_$actualIndex',
                           child: CircleAvatar(
                             backgroundColor: item.isChecked
                                 ? Colors.green.shade200
@@ -929,6 +933,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                           ),
                           keyboardType: TextInputType.number,
                           textInputAction: TextInputAction.next,
+                          onChanged: (value) => setModalState(() {}),
                         ),
                       ),
                       SizedBox(width: 12),
