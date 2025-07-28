@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:grocery/provider/checklist_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   final String title;
   const MyHomePage({required this.title, super.key});
 
   @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
   Widget build(BuildContext context) {
+    final checkModel = Provider.of<CheckBoxModel>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, style: TextStyle(color: Colors.white)),
+        title: Text(widget.title, style: TextStyle(color: Colors.white)),
         actionsIconTheme: IconThemeData(color: Colors.blue),
         backgroundColor: Colors.red,
         centerTitle: true,
@@ -22,6 +30,21 @@ class MyHomePage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+      body: ChangeNotifierProvider(
+        create: (context) => CheckBoxModel(),
+        child: SingleChildScrollView(
+          child: ListTile(
+            leading: Icon(Icons.food_bank, size: 40, color: Colors.yellow),
+            title: Text("Food Item"),
+            trailing: Checkbox(
+              value: checkModel.isChecked,
+              onChanged: (bool? newValue) {
+                checkModel.toggle(newValue ?? false);
+              },
+            ),
+          ),
+        ),
       ),
     );
   }

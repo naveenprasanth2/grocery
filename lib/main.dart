@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:grocery/my_home_page.dart';
+import 'package:grocery/provider/checklist_provider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => CheckBoxModel(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
