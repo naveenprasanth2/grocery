@@ -10,7 +10,8 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tileList = context.watch<CheckBoxModel>();
-    final TextEditingController controller = TextEditingController();
+    final TextEditingController nameController = TextEditingController();
+    final TextEditingController quantityController = TextEditingController();
     return Scaffold(
       backgroundColor: Color(0xFFF8F8F8),
       appBar: AppBar(
@@ -151,68 +152,71 @@ class MyHomePage extends StatelessWidget {
           icon: Icon(Icons.add, color: Colors.white),
           label: Text('Add Item', style: TextStyle(color: Colors.white)),
           onPressed: () {
-            showModalBottomSheet(
+            showDialog(
               context: context,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              isScrollControlled: true,
               builder: (context) {
-                return Padding(
-                  padding: EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    top: 24,
-                    bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+                final width = MediaQuery.of(context).size.width * 0.8;
+                return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Add Grocery Item',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      TextField(
-                        controller: controller,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          labelText: 'Item name',
-                          border: OutlineInputBorder(),
-                        ),
-                        onSubmitted: (_) {
-                          if (controller.text.trim().isNotEmpty) {
-                            tileList.addItem(controller.text.trim());
-                            controller.clear();
-                            Navigator.pop(context);
-                          }
-                        },
-                      ),
-                      SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green.shade600,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                  title: Text(
+                    'Add Grocery Item',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  content: SizedBox(
+                    width: width,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: nameController,
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            labelText: 'Item name',
+                            border: OutlineInputBorder(),
                           ),
-                          onPressed: () {
-                            if (controller.text.trim().isNotEmpty) {
-                              tileList.addItem(controller.text.trim());
-                              controller.clear();
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: Text('Add'),
+                          textInputAction: TextInputAction.next,
+                        ),
+                        SizedBox(height: 12),
+                        TextField(
+                          controller: quantityController,
+                          decoration: InputDecoration(
+                            labelText: 'Quantity',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green.shade600,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                    ],
-                  ),
+                      onPressed: () {
+                        if (nameController.text.trim().isNotEmpty &&
+                            quantityController.text.trim().isNotEmpty) {
+                          tileList.addItem(
+                            '${nameController.text.trim()} (${quantityController.text.trim()})',
+                          );
+                          nameController.clear();
+                          quantityController.clear();
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: Text('Add'),
+                    ),
+                  ],
                 );
               },
             );
