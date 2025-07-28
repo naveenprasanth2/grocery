@@ -27,7 +27,9 @@ class CategoryFilterBar extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: AppConstants.categoryIcons.keys.length,
               itemBuilder: (context, index) {
-                final category = AppConstants.categoryIcons.keys.elementAt(index);
+                final category = AppConstants.categoryIcons.keys.elementAt(
+                  index,
+                );
                 final isSelected = selectedCategory == category;
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),

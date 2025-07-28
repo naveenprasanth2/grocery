@@ -15,6 +15,7 @@ class HistoryScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 2,
+        iconTheme: const IconThemeData(color: Colors.black),
         centerTitle: true,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,

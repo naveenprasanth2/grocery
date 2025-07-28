@@ -10,12 +10,13 @@ class GroceryListProvider extends ChangeNotifier {
   List<GroceryItem> get items => _items;
   int get count => _items.length;
 
-  double get totalCost => _items.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
-  
+  double get totalCost =>
+      _items.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+
   double get completedCost => _items
       .where((item) => item.isChecked)
       .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
-      
+
   double get remainingCost => totalCost - completedCost;
 
   int get completedCount => _items.where((item) => item.isChecked).length;
@@ -48,11 +49,7 @@ class GroceryListProvider extends ChangeNotifier {
   }
 
   void addItem(String title, {double price = 0.0, int quantity = 1}) {
-    final item = GroceryItem(
-      title: title,
-      price: price,
-      quantity: quantity,
-    );
+    final item = GroceryItem(title: title, price: price, quantity: quantity);
     _items.add(item);
     _saveToPrefs();
     notifyListeners();

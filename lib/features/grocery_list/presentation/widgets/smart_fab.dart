@@ -14,10 +14,7 @@ class SmartFAB extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScaleTransition(
       scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-          parent: animationController,
-          curve: Curves.elasticOut,
-        ),
+        CurvedAnimation(parent: animationController, curve: Curves.elasticOut),
       ),
       child: FloatingActionButton.extended(
         backgroundColor: Colors.green.shade600,

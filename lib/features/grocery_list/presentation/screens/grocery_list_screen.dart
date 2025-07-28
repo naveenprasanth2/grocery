@@ -25,7 +25,7 @@ class _GroceryListScreenState extends State<GroceryListScreen>
   late AnimationController _fabAnimationController;
   late AnimationController _listAnimationController;
   final TextEditingController _searchController = TextEditingController();
-  
+
   bool _isSearching = false;
   String _selectedCategoryFilter = 'All';
   bool _showOnlyUnchecked = false;
@@ -104,7 +104,8 @@ class _GroceryListScreenState extends State<GroceryListScreen>
           backgroundColor: AppConstants.backgroundColor,
           appBar: GroceryAppBar(
             onSearchToggle: _toggleSearch,
-            onMenuAction: (action) => _handleMenuAction(action, groceryProvider),
+            onMenuAction: (action) =>
+                _handleMenuAction(action, groceryProvider),
           ),
           drawer: const GroceryDrawer(),
           body: SafeArea(
@@ -130,7 +131,8 @@ class _GroceryListScreenState extends State<GroceryListScreen>
                 Expanded(
                   child: groceryProvider.items.isEmpty
                       ? EmptyState(
-                          onQuickAdd: (item) => groceryProvider.addItem(item, quantity: 1),
+                          onQuickAdd: (item) =>
+                              groceryProvider.addItem(item, quantity: 1),
                         )
                       : GroceryItemsList(
                           searchQuery: _searchController.text,

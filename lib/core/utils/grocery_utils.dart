@@ -5,7 +5,7 @@ class CategoryUtils {
   /// Categorizes an item based on its name
   static String categorizeItem(String itemName) {
     final name = itemName.toLowerCase();
-    
+
     if (['milk', 'cheese', 'butter', 'yogurt', 'cream'].any(name.contains)) {
       return 'Dairy';
     }
@@ -24,7 +24,7 @@ class CategoryUtils {
     if (['coffee', 'tea', 'juice', 'soda', 'water'].any(name.contains)) {
       return 'Beverages';
     }
-    
+
     return 'Other';
   }
 

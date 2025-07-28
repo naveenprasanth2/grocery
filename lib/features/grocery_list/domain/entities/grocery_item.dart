@@ -30,22 +30,22 @@ class GroceryItem {
   }
 
   Map<String, dynamic> toJson() => {
-        'title': title,
-        'isChecked': isChecked,
-        'price': price,
-        'quantity': quantity,
-        'createdAt': createdAt.toIso8601String(),
-      };
+    'title': title,
+    'isChecked': isChecked,
+    'price': price,
+    'quantity': quantity,
+    'createdAt': createdAt.toIso8601String(),
+  };
 
   factory GroceryItem.fromJson(Map<String, dynamic> json) => GroceryItem(
-        title: json['title'],
-        isChecked: json['isChecked'] ?? false,
-        price: (json['price'] ?? 0.0).toDouble(),
-        quantity: json['quantity'] ?? 1,
-        createdAt: json['createdAt'] != null
-            ? DateTime.parse(json['createdAt'])
-            : DateTime.now(),
-      );
+    title: json['title'],
+    isChecked: json['isChecked'] ?? false,
+    price: (json['price'] ?? 0.0).toDouble(),
+    quantity: json['quantity'] ?? 1,
+    createdAt: json['createdAt'] != null
+        ? DateTime.parse(json['createdAt'])
+        : DateTime.now(),
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -59,10 +59,7 @@ class GroceryItem {
 
   @override
   int get hashCode =>
-      title.hashCode ^
-      isChecked.hashCode ^
-      price.hashCode ^
-      quantity.hashCode;
+      title.hashCode ^ isChecked.hashCode ^ price.hashCode ^ quantity.hashCode;
 
   @override
   String toString() {

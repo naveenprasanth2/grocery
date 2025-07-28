@@ -4,13 +4,14 @@ class AppConstants {
   // App Information
   static const String appName = 'Smart Grocery';
   static const String appVersion = '2.0.0';
-  static const String appDescription = 'A modern, feature-rich grocery shopping app with smart organization.';
+  static const String appDescription =
+      'A modern, feature-rich grocery shopping app with smart organization.';
 
   // Colors
   static const Color primaryColor = Color(0xFF4CAF50);
   static const Color backgroundColor = Color(0xFFF8F8F8);
   static const Color cardColor = Colors.white;
-  
+
   // Category Colors
   static final Map<String, Color> categoryColors = {
     'Dairy': Colors.blue.shade600,

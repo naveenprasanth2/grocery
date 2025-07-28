@@ -17,6 +17,7 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       elevation: 2,
       centerTitle: true,
+      iconTheme: const IconThemeData(color: Colors.black), // Black drawer icon
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -132,7 +133,9 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
           width: 200,
           decoration: BoxDecoration(
             color: Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
+            borderRadius: BorderRadius.circular(
+              AppConstants.defaultBorderRadius,
+            ),
             border: Border.all(color: Colors.grey.shade300, width: 2),
           ),
           child: Column(
@@ -161,7 +164,9 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue.shade600,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
+                borderRadius: BorderRadius.circular(
+                  AppConstants.defaultBorderRadius,
+                ),
               ),
             ),
             onPressed: () {
@@ -179,7 +184,10 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               );
             },
-            child: const Text('Simulate Scan', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Simulate Scan',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -232,7 +240,9 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange.shade600,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
+                borderRadius: BorderRadius.circular(
+                  AppConstants.defaultBorderRadius,
+                ),
               ),
             ),
             onPressed: () {
@@ -244,7 +254,10 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               );
             },
-            child: const Text('Start Timer', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Start Timer',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),

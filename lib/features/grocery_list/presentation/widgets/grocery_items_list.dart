@@ -58,7 +58,10 @@ class GroceryItemsList extends StatelessWidget {
                     ),
                   ),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     leading: CircleAvatar(
                       backgroundColor: item.isChecked
                           ? Colors.green.shade200
@@ -92,8 +95,9 @@ class GroceryItemsList extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: CategoryUtils.getCategoryColor(category)
-                                .withValues(alpha: 0.1),
+                            color: CategoryUtils.getCategoryColor(
+                              category,
+                            ).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -117,15 +121,20 @@ class GroceryItemsList extends StatelessWidget {
                         if (value != null) {
                           final actualIndex = provider.items.indexOf(item);
                           provider.toggle(actualIndex, value);
-                          
+
                           if (value) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Row(
                                   children: [
-                                    const Icon(Icons.check_circle, color: Colors.white),
+                                    const Icon(
+                                      Icons.check_circle,
+                                      color: Colors.white,
+                                    ),
                                     const SizedBox(width: 8),
-                                    Text('✓ ${GroceryUtils.extractItemName(item.title)} completed!'),
+                                    Text(
+                                      '✓ ${GroceryUtils.extractItemName(item.title)} completed!',
+                                    ),
                                   ],
                                 ),
                                 duration: const Duration(seconds: 1),
@@ -136,7 +145,8 @@ class GroceryItemsList extends StatelessWidget {
                         }
                       },
                     ),
-                    onLongPress: () => _showDeleteDialog(context, provider, item),
+                    onLongPress: () =>
+                        _showDeleteDialog(context, provider, item),
                   ),
                 ),
               );
@@ -147,7 +157,11 @@ class GroceryItemsList extends StatelessWidget {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, GroceryListProvider provider, item) {
+  void _showDeleteDialog(
+    BuildContext context,
+    GroceryListProvider provider,
+    item,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -161,7 +175,9 @@ class GroceryItemsList extends StatelessWidget {
             const Text('Delete Item'),
           ],
         ),
-        content: Text('Are you sure you want to delete "${GroceryUtils.extractItemName(item.title)}"?'),
+        content: Text(
+          'Are you sure you want to delete "${GroceryUtils.extractItemName(item.title)}"?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -171,7 +187,9 @@ class GroceryItemsList extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red.shade600,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
+                borderRadius: BorderRadius.circular(
+                  AppConstants.defaultBorderRadius,
+                ),
               ),
             ),
             onPressed: () {
@@ -180,7 +198,9 @@ class GroceryItemsList extends StatelessWidget {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('${GroceryUtils.extractItemName(item.title)} deleted'),
+                  content: Text(
+                    '${GroceryUtils.extractItemName(item.title)} deleted',
+                  ),
                   backgroundColor: Colors.red.shade600,
                 ),
               );

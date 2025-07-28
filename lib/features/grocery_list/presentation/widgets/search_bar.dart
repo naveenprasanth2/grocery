@@ -33,7 +33,9 @@ class GrocerySearchBar extends StatelessWidget {
                     onPressed: onSearchClosed,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.defaultBorderRadius,
+                    ),
                   ),
                   filled: true,
                   fillColor: Colors.white,

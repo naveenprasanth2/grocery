@@ -4,10 +4,7 @@ import '../../../../core/constants/app_constants.dart';
 class EmptyState extends StatelessWidget {
   final Function(String) onQuickAdd;
 
-  const EmptyState({
-    super.key,
-    required this.onQuickAdd,
-  });
+  const EmptyState({super.key, required this.onQuickAdd});
 
   @override
   Widget build(BuildContext context) {

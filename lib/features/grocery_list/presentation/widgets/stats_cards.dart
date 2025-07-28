@@ -5,10 +5,7 @@ import '../providers/grocery_list_provider.dart';
 class StatsCards extends StatelessWidget {
   final GroceryListProvider groceryProvider;
 
-  const StatsCards({
-    super.key,
-    required this.groceryProvider,
-  });
+  const StatsCards({super.key, required this.groceryProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +101,9 @@ class StatsCards extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(AppConstants.defaultBorderRadius),
+            borderRadius: BorderRadius.circular(
+              AppConstants.defaultBorderRadius,
+            ),
           ),
           child: Icon(icon, color: color, size: 24),
         ),

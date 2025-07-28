@@ -3,12 +3,10 @@ import '../../../../../core/constants/app_constants.dart';
 import '../../../../../core/utils/grocery_utils.dart';
 
 class AddItemDialog extends StatefulWidget {
-  final Function(String title, int quantity, double price, bool isUrgent) onItemAdded;
+  final Function(String title, int quantity, double price, bool isUrgent)
+  onItemAdded;
 
-  const AddItemDialog({
-    super.key,
-    required this.onItemAdded,
-  });
+  const AddItemDialog({super.key, required this.onItemAdded});
 
   @override
   State<AddItemDialog> createState() => _AddItemDialogState();
@@ -16,9 +14,11 @@ class AddItemDialog extends StatefulWidget {
 
 class _AddItemDialogState extends State<AddItemDialog> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _quantityController = TextEditingController(text: '1');
+  final TextEditingController _quantityController = TextEditingController(
+    text: '1',
+  );
   final TextEditingController _priceController = TextEditingController();
-  
+
   String _selectedCategory = 'Other';
   bool _isUrgent = false;
 
@@ -125,10 +125,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
               ),
               Text(
                 'Add items to your smart grocery list',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -168,10 +165,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
           fillColor: Colors.white,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(
-              color: Colors.green.shade600,
-              width: 2,
-            ),
+            borderSide: BorderSide(color: Colors.green.shade600, width: 2),
           ),
         ),
         textInputAction: TextInputAction.next,
@@ -210,7 +204,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 fillColor: Colors.white,
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
-                  borderSide: BorderSide(color: Colors.orange.shade600, width: 2),
+                  borderSide: BorderSide(
+                    color: Colors.orange.shade600,
+                    width: 2,
+                  ),
                 ),
               ),
               keyboardType: TextInputType.number,
@@ -241,15 +238,23 @@ class _AddItemDialogState extends State<AddItemDialog> {
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide.none,
                 ),
-                prefixIcon: Icon(Icons.attach_money, color: Colors.purple.shade600),
+                prefixIcon: Icon(
+                  Icons.attach_money,
+                  color: Colors.purple.shade600,
+                ),
                 filled: true,
                 fillColor: Colors.white,
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
-                  borderSide: BorderSide(color: Colors.purple.shade600, width: 2),
+                  borderSide: BorderSide(
+                    color: Colors.purple.shade600,
+                    width: 2,
+                  ),
                 ),
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
             ),
           ),
         ),
@@ -285,42 +290,61 @@ class _AddItemDialogState extends State<AddItemDialog> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: ['Dairy', 'Meat', 'Fruits', 'Vegetables', 'Grains', 'Beverages', 'Other']
-                .map((category) {
-              final isSelected = _selectedCategory == category;
-              return GestureDetector(
-                onTap: () => setState(() => _selectedCategory = category),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isSelected ? CategoryUtils.getCategoryColor(category) : Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: CategoryUtils.getCategoryColor(category),
-                      width: isSelected ? 2 : 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        CategoryUtils.getCategoryIcon(category),
-                        size: 16,
-                        color: isSelected ? Colors.white : CategoryUtils.getCategoryColor(category),
+            children:
+                [
+                  'Dairy',
+                  'Meat',
+                  'Fruits',
+                  'Vegetables',
+                  'Grains',
+                  'Beverages',
+                  'Other',
+                ].map((category) {
+                  final isSelected = _selectedCategory == category;
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedCategory = category),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        category,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.grey.shade700,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? CategoryUtils.getCategoryColor(category)
+                            : Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: CategoryUtils.getCategoryColor(category),
+                          width: isSelected ? 2 : 1,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            CategoryUtils.getCategoryIcon(category),
+                            size: 16,
+                            color: isSelected
+                                ? Colors.white
+                                : CategoryUtils.getCategoryColor(category),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            category,
+                            style: TextStyle(
+                              color: isSelected
+                                  ? Colors.white
+                                  : Colors.grey.shade700,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
           ),
         ],
       ),
@@ -400,7 +424,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
                   setState(() {});
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [Colors.green.shade400, Colors.green.shade600],
@@ -424,8 +451,9 @@ class _AddItemDialogState extends State<AddItemDialog> {
   }
 
   Widget _buildActionButtons() {
-    final isValid = _nameController.text.trim().isNotEmpty && 
-                   _quantityController.text.trim().isNotEmpty;
+    final isValid =
+        _nameController.text.trim().isNotEmpty &&
+        _quantityController.text.trim().isNotEmpty;
 
     return Row(
       children: [
@@ -478,14 +506,9 @@ class _AddItemDialogState extends State<AddItemDialog> {
   void _handleAddItem() {
     final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
     final quantity = int.tryParse(_quantityController.text.trim()) ?? 1;
-    
-    widget.onItemAdded(
-      _nameController.text.trim(),
-      quantity,
-      price,
-      _isUrgent,
-    );
-    
+
+    widget.onItemAdded(_nameController.text.trim(), quantity, price, _isUrgent);
+
     Navigator.pop(context);
   }
 }

@@ -34,6 +34,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
         backgroundColor: Colors.white,
         elevation: 2,
         centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,

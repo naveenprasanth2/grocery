@@ -80,7 +80,9 @@ class GroceryDrawer extends StatelessWidget {
                   color: Colors.orange.shade600,
                 ),
                 title: const Text('Current Total'),
-                subtitle: Text('\$${groceryProvider.totalCost.toStringAsFixed(2)}'),
+                subtitle: Text(
+                  '\$${groceryProvider.totalCost.toStringAsFixed(2)}',
+                ),
                 trailing: const Icon(Icons.info_outline),
               );
             },
