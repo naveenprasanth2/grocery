@@ -1730,7 +1730,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     children: [
                       Expanded(
                         child: TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            nameController.clear();
+                            quantityController.clear();
+                            Navigator.pop(context);
+                          },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.symmetric(vertical: 16),
                           ),
