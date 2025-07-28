@@ -255,9 +255,10 @@ class MyHomePage extends StatelessWidget {
                                                     editQuantityController.text
                                                         .trim()
                                                         .isNotEmpty) {
-                                                  tileList.items[index].title =
-                                                      '${editNameController.text.trim()} (${editQuantityController.text.trim()})';
-                                                  tileList.notifyListeners();
+                                                  tileList.updateItem(
+                                                    index,
+                                                    '${editNameController.text.trim()} (${editQuantityController.text.trim()})',
+                                                  );
                                                   Navigator.pop(context);
                                                 }
                                               },
@@ -280,6 +281,36 @@ class MyHomePage extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            onLongPress: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Delete Item'),
+                                  content: Text(
+                                    'Are you sure you want to delete this item?',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                      ),
+                                      onPressed: () {
+                                        tileList.deleteItem(index);
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        'Delete',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         );
                       },
@@ -356,7 +387,7 @@ class MyHomePage extends StatelessWidget {
                           Navigator.pop(context);
                         }
                       },
-                      child: Text('Add'),
+                      child: Text('Add', style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 );
