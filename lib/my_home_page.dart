@@ -162,14 +162,123 @@ class MyHomePage extends StatelessWidget {
                                     : Colors.black,
                               ),
                             ),
-                            trailing: Checkbox(
-                              value: item.isChecked,
-                              activeColor: Colors.green,
-                              onChanged: (bool? value) {
-                                if (value != null) {
-                                  tileList.toggle(index, value);
-                                }
-                              },
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.edit,
+                                    color: Colors.blueGrey,
+                                  ),
+                                  tooltip: 'Edit',
+                                  onPressed: () {
+                                    final editNameController =
+                                        TextEditingController(
+                                          text: item.title.split(' (').first,
+                                        );
+                                    final editQuantityController =
+                                        TextEditingController(
+                                          text: item.title.contains('(')
+                                              ? item.title
+                                                    .split('(')
+                                                    .last
+                                                    .replaceAll(')', '')
+                                              : '',
+                                        );
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        final width =
+                                            MediaQuery.of(context).size.width *
+                                            0.8;
+                                        return AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                          ),
+                                          title: Text(
+                                            'Edit Item',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          content: SizedBox(
+                                            width: width,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                TextField(
+                                                  controller:
+                                                      editNameController,
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Item name',
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                  ),
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                ),
+                                                SizedBox(height: 12),
+                                                TextField(
+                                                  controller:
+                                                      editQuantityController,
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Quantity',
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('Cancel'),
+                                            ),
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    Colors.green.shade600,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                              onPressed: () {
+                                                if (editNameController.text
+                                                        .trim()
+                                                        .isNotEmpty &&
+                                                    editQuantityController.text
+                                                        .trim()
+                                                        .isNotEmpty) {
+                                                  tileList.items[index].title =
+                                                      '${editNameController.text.trim()} (${editQuantityController.text.trim()})';
+                                                  tileList.notifyListeners();
+                                                  Navigator.pop(context);
+                                                }
+                                              },
+                                              child: Text('Update'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                                Checkbox(
+                                  value: item.isChecked,
+                                  activeColor: Colors.green,
+                                  onChanged: (bool? value) {
+                                    if (value != null) {
+                                      tileList.toggle(index, value);
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         );
