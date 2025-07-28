@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:grocery/my_home_page.dart';
 import 'package:grocery/provider/checklist_provider.dart';
+import 'package:grocery/provider/expense_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => CheckBoxModel(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => CheckBoxModel()),
+        ChangeNotifierProvider(create: (context) => ExpenseProvider()),
+      ],
       child: const MyApp(),
     ),
   );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:grocery/provider/checklist_provider.dart';
+import 'package:grocery/provider/expense_provider.dart';
+import 'package:grocery/screens/expense_screen.dart';
+import 'package:grocery/screens/history_screen.dart';
 import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -103,6 +106,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: Color(0xFFF8F8F8),
       appBar: _buildAppBar(context, tileList),
+      drawer: _buildDrawer(context),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -183,9 +187,22 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   tileList.deleteItem(0);
                 }
                 break;
+              case 'save_to_history':
+                _saveToHistory(context, tileList);
+                break;
             }
           },
           itemBuilder: (context) => [
+            PopupMenuItem(
+              value: 'save_to_history',
+              child: Row(
+                children: [
+                  Icon(Icons.save, color: Colors.blue),
+                  SizedBox(width: 8),
+                  Text('Save to History'),
+                ],
+              ),
+            ),
             PopupMenuItem(
               value: 'clear_completed',
               child: Row(
@@ -244,10 +261,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     color: Colors.orange,
                   ),
                   _buildStatChip(
-                    icon: Icons.check_circle,
-                    label: 'Done',
-                    value: '$completedItems',
-                    color: Colors.green,
+                    icon: Icons.attach_money,
+                    label: 'Total Cost',
+                    value: '\$${tileList.totalCost.toStringAsFixed(2)}',
+                    color: Colors.purple,
                   ),
                 ],
               ),
@@ -410,12 +427,270 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   void _quickAddItem(String itemName) {
     final tileList = context.read<CheckBoxModel>();
-    tileList.addItem('$itemName (1)');
+    tileList.addItem(itemName, quantity: 1);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$itemName added to your list'),
         duration: Duration(seconds: 2),
         backgroundColor: Colors.green.shade600,
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.green.shade600, Colors.green.shade800],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.shopping_basket, color: Colors.white, size: 48),
+                SizedBox(height: 8),
+                Text(
+                  'Smart Grocery',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Manage expenses',
+                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.shopping_cart, color: Colors.green.shade600),
+            title: Text('Shopping List'),
+            selected: true,
+            selectedTileColor: Colors.green.shade50,
+            onTap: () => Navigator.pop(context),
+          ),
+          ListTile(
+            leading: Icon(Icons.analytics, color: Colors.blue.shade600),
+            title: Text('Expense Tracker'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ExpenseScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.history, color: Colors.purple.shade600),
+            title: Text('Shopping History'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HistoryScreen()),
+              );
+            },
+          ),
+          Divider(),
+          Consumer<CheckBoxModel>(
+            builder: (context, tileList, child) {
+              return ListTile(
+                leading: Icon(
+                  Icons.attach_money,
+                  color: Colors.orange.shade600,
+                ),
+                title: Text('Current Total'),
+                subtitle: Text('\$${tileList.totalCost.toStringAsFixed(2)}'),
+                trailing: Icon(Icons.info_outline),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.settings, color: Colors.grey.shade600),
+            title: Text('Settings'),
+            onTap: () {
+              Navigator.pop(context);
+              _showSettingsDialog(context);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.info, color: Colors.grey.shade600),
+            title: Text('About'),
+            onTap: () {
+              Navigator.pop(context);
+              _showAboutDialog(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _saveToHistory(BuildContext context, CheckBoxModel tileList) {
+    if (tileList.items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No items to save'),
+          backgroundColor: Colors.orange.shade600,
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        final storeController = TextEditingController();
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.save, color: Colors.blue.shade600),
+              SizedBox(width: 8),
+              Text('Save to History'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Save this shopping list to your history?'),
+              SizedBox(height: 16),
+              TextField(
+                controller: storeController,
+                decoration: InputDecoration(
+                  labelText: 'Store Name (optional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  prefixIcon: Icon(Icons.store),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue.shade600,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () {
+                context.read<ExpenseProvider>().addToHistory(
+                  tileList.items,
+                  storeController.text.trim(),
+                );
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Shopping list saved to history!'),
+                    backgroundColor: Colors.green.shade600,
+                  ),
+                );
+              },
+              child: Text('Save', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.settings, color: Colors.grey.shade600),
+            SizedBox(width: 8),
+            Text('Settings'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.notifications),
+              title: Text('Notifications'),
+              trailing: Switch(value: true, onChanged: (value) {}),
+            ),
+            ListTile(
+              leading: Icon(Icons.dark_mode),
+              title: Text('Dark Mode'),
+              trailing: Switch(value: false, onChanged: (value) {}),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.info, color: Colors.blue.shade600),
+            SizedBox(width: 8),
+            Text('About Smart Grocery'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Smart Grocery v1.0.0',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'A comprehensive grocery list app with expense tracking and shopping history.',
+            ),
+            SizedBox(height: 16),
+            Text('Features:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('• Smart grocery list management'),
+            Text('• Expense tracking'),
+            Text('• Shopping history'),
+            Text('• Category organization'),
+            Text('• Price tracking'),
+            SizedBox(height: 16),
+            Text(
+              'Made with ❤️ using Flutter',
+              style: TextStyle(color: Colors.grey.shade600),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+        ],
       ),
     );
   }
