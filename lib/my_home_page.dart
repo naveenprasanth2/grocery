@@ -9,7 +9,8 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkModel = Provider.of<CheckBoxModel>(context);
+    final tileList = context.watch<CheckBoxModel>();
+    TextEditingController _controller = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: Text(title, style: TextStyle(color: Colors.white)),
@@ -26,20 +27,66 @@ class MyHomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: ChangeNotifierProvider(
-        create: (context) => CheckBoxModel(),
-        child: SingleChildScrollView(
-          child: ListTile(
-            leading: Icon(Icons.food_bank, size: 40, color: Colors.yellow),
-            title: Text("Food Item"),
-            trailing: Checkbox(
-              value: checkModel.isChecked,
-              onChanged: (bool? newValue) {
-                checkModel.toggle(newValue ?? false);
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      labelText: 'Add Item',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_controller.text.trim().isNotEmpty) {
+                      tileList.addItem(_controller.text.trim());
+                      _controller.clear();
+                    }
+                  },
+                  child: Text('Add'),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Total Items: ${tileList.count}',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: tileList.items.length,
+              itemBuilder: (context, index) {
+                final item = tileList.items[index];
+                return ListTile(
+                  leading: Icon(
+                    Icons.food_bank,
+                    size: 40,
+                    color: Colors.yellow,
+                  ),
+                  title: Text(item.title),
+                  trailing: Checkbox(
+                    value: item.isChecked,
+                    onChanged: (bool? value) {
+                      if (value != null) {
+                        tileList.toggle(index, value);
+                      }
+                    },
+                  ),
+                );
               },
             ),
           ),
-        ),
+        ],
       ),
     );
   }

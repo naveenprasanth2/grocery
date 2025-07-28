@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:grocery/provider/title_item.dart';
 
 class CheckBoxModel extends ChangeNotifier {
-  bool _isChecked = false;
+  final List<TileItem> _items = [];
 
-  bool get isChecked => _isChecked;
+  List<TileItem> get items => _items;
 
-  void toggle(bool value) {
-    _isChecked = value;
+  int get count => _items.length;
+
+  void addItem(String title) {
+    _items.add(TileItem(title: title));
+    notifyListeners();
+  }
+
+  void toggle(int index, bool value) {
+    _items[index].isChecked = value;
     notifyListeners();
   }
 }
