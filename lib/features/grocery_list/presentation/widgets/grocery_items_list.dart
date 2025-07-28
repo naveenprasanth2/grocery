@@ -209,7 +209,10 @@ class GroceryItemsList extends StatelessWidget {
                                                 ),
                                                 const SizedBox(width: 8),
                                                 Text(
-                                                  '✓ ${GroceryUtils.extractItemName(item.title)} completed!',
+                                                  '${GroceryUtils.extractItemName(item.title)} completed!',
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -431,6 +434,7 @@ class GroceryItemsList extends StatelessWidget {
                 SnackBar(
                   content: Text(
                     '${GroceryUtils.extractItemName(item.title)} deleted',
+                    style: TextStyle(fontSize: 20),
                   ),
                   backgroundColor: Colors.red.shade600,
                   action: SnackBarAction(
