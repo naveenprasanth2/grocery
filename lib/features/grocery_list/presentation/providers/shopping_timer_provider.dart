@@ -1,7 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:vibration/vibration.dart';
+
+typedef AlarmCallback = void Function();
 
 class ShoppingTimerProvider extends ChangeNotifier {
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  AlarmCallback? onAlarm;
   Duration _duration = const Duration(minutes: 45);
   Duration _remaining = const Duration(minutes: 45);
   Timer? _timer;
@@ -28,9 +34,28 @@ class ShoppingTimerProvider extends ChangeNotifier {
       } else {
         timer.cancel();
         _isRunning = false;
+        _onTimerComplete();
+        if (onAlarm != null) onAlarm!();
         notifyListeners();
       }
     });
+    notifyListeners();
+  }
+
+  Future<void> _onTimerComplete() async {
+    if (await Vibration.hasVibrator()) {
+      Vibration.vibrate(pattern: [0, 500, 500, 500, 500, 500, 500, 500], repeat: 0);
+    }
+    await _audioPlayer.play(AssetSource('alarm.mp3'));
+  }
+
+  bool get alarmActive => !_isRunning && _remaining.inSeconds == 0;
+
+  Future<void> stopAlarm() async {
+    await _audioPlayer.stop();
+    if (await Vibration.hasVibrator()) {
+      Vibration.cancel();
+    }
     notifyListeners();
   }
 
@@ -43,12 +68,14 @@ class ShoppingTimerProvider extends ChangeNotifier {
     _remaining = _duration;
     _isRunning = false;
     _timer?.cancel();
+    _audioPlayer.stop();
     notifyListeners();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _audioPlayer.dispose();
     super.dispose();
   }
 }

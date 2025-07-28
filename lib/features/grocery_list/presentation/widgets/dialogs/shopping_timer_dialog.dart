@@ -16,6 +16,49 @@ class ShoppingTimerDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timer = Provider.of<ShoppingTimerProvider>(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (timer.alarmActive) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                AppConstants.largeBorderRadius,
+              ),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.alarm, color: Colors.red.shade600),
+                const SizedBox(width: 8),
+                const Text('Time is up!'),
+              ],
+            ),
+            content: const Text('Shopping timer completed.'),
+            actions: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.shade600,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.defaultBorderRadius,
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                  timer.stopAlarm();
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text(
+                  'Stop Alarm',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    });
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppConstants.largeBorderRadius),
