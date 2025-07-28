@@ -15,32 +15,30 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xFFF8F8F8),
       appBar: AppBar(
-        title: Text(
-          title,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        actionsIconTheme: IconThemeData(color: Colors.blue),
-        backgroundColor: Colors.green.shade700,
+        backgroundColor: Colors.white,
+        elevation: 2,
         centerTitle: true,
-        elevation: 4,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Row(
-              children: [
-                Icon(Icons.calendar_today, color: Colors.white, size: 18),
-                SizedBox(width: 6),
-                Text(
-                  DateFormat('dd-MM-yyyy').format(DateTime.now()),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.shopping_basket, color: Colors.green.shade700, size: 28),
+            SizedBox(width: 10),
+            Text(
+              'Grocery List',
+              style: TextStyle(
+                color: Colors.green.shade800,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                letterSpacing: 0.5,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        toolbarHeight: 60,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(18)),
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -48,44 +46,79 @@ class MyHomePage extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(
-                vertical: 16.0,
+                vertical: 18.0,
                 horizontal: 20,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Grocery Checklist',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green.shade800,
-                      ),
-                    ),
+              child: Card(
+                color: Colors.white,
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 18,
                   ),
-                  Wrap(
-                    spacing: 8,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Chip(
-                        label: Text(
-                          'Total: ${tileList.count}',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Colors.green.shade400,
-                        elevation: 2,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.list_alt,
+                            color: Colors.green.shade700,
+                            size: 22,
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            'Total: ',
+                            style: TextStyle(
+                              color: Colors.green.shade800,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            '${tileList.count}',
+                            style: TextStyle(
+                              color: Colors.green.shade700,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
                       ),
-                      Chip(
-                        label: Text(
-                          'Remaining: ${tileList.items.where((x) => !x.isChecked).length}',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Colors.orange.shade400,
-                        elevation: 2,
+                      SizedBox(width: 28),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.pending_actions,
+                            color: Colors.orange.shade700,
+                            size: 22,
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            'Remaining: ',
+                            style: TextStyle(
+                              color: Colors.orange.shade800,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            '${tileList.items.where((x) => !x.isChecked).length}',
+                            style: TextStyle(
+                              color: Colors.orange.shade700,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
             Expanded(
