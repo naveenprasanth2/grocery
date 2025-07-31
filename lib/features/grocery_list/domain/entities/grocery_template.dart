@@ -1,17 +1,13 @@
-import 'dart:convert';
-
 class GroceryTemplateItem {
   final String title;
   final int quantity;
 
   GroceryTemplateItem({required this.title, required this.quantity});
 
-  Map<String, dynamic> toJson() => {
-        'title': title,
-        'quantity': quantity,
-      };
+  Map<String, dynamic> toJson() => {'title': title, 'quantity': quantity};
 
-  factory GroceryTemplateItem.fromJson(Map<String, dynamic> json) => GroceryTemplateItem(
+  factory GroceryTemplateItem.fromJson(Map<String, dynamic> json) =>
+      GroceryTemplateItem(
         title: json['title'],
         quantity: json['quantity'] ?? 1,
       );
@@ -25,14 +21,17 @@ class GroceryTemplate {
   GroceryTemplate({required this.id, required this.name, required this.items});
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'items': items.map((e) => e.toJson()).toList(),
-      };
+    'id': id,
+    'name': name,
+    'items': items.map((e) => e.toJson()).toList(),
+  };
 
-  factory GroceryTemplate.fromJson(Map<String, dynamic> json) => GroceryTemplate(
+  factory GroceryTemplate.fromJson(Map<String, dynamic> json) =>
+      GroceryTemplate(
         id: json['id'],
         name: json['name'],
-        items: (json['items'] as List).map((e) => GroceryTemplateItem.fromJson(e)).toList(),
+        items: (json['items'] as List)
+            .map((e) => GroceryTemplateItem.fromJson(e))
+            .toList(),
       );
 }

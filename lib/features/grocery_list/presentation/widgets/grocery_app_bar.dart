@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'dart:convert';
-
 import '../../../../core/constants/app_constants.dart';
 import '../providers/grocery_list_provider.dart';
-import 'dialogs/shopping_timer_dialog.dart';
 
 class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onSearchToggle;
@@ -50,11 +46,6 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: Icon(Icons.qr_code_scanner, color: Colors.green.shade700),
           onPressed: () => _showQRCodeScanDialog(context),
           tooltip: 'Scan QR Code',
-        ),
-        IconButton(
-          icon: Icon(Icons.timer, color: Colors.green.shade700),
-          onPressed: () => _showShoppingTimerDialog(context),
-          tooltip: 'Shopping Timer',
         ),
         IconButton(
           icon: Icon(Icons.search, color: Colors.green.shade700),
@@ -118,56 +109,6 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
     );
-  }
-
-  void _shareAsQRCode(BuildContext context) async {
-    final provider = context.read<GroceryListProvider>();
-
-    if (provider.items.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('No items to share'),
-          backgroundColor: Colors.orange.shade600,
-        ),
-      );
-      return;
-    }
-
-    final listData = {
-      'type': 'grocery_list',
-      'name': 'My Grocery List',
-      'created_at': DateTime.now().toIso8601String(),
-      'items': provider.items
-          .map(
-            (item) => {
-              'title': item.title,
-              'price': item.price,
-              'quantity': item.quantity,
-              'isChecked': item.isChecked,
-            },
-          )
-          .toList(),
-    };
-
-    final jsonString = json.encode(listData);
-
-    try {
-      await Share.share(
-        jsonString,
-        subject: 'My Grocery List - ${provider.items.length} items',
-      );
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Sharing not available in simulator: ${e.toString()}',
-            ),
-            backgroundColor: Colors.red.shade600,
-          ),
-        );
-      }
-    }
   }
 
   void _showQRCodeScanDialog(BuildContext context) {
@@ -314,13 +255,6 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
     };
 
     _importGroceryList(context, sampleList);
-  }
-
-  void _showShoppingTimerDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const ShoppingTimerDialog(),
-    );
   }
 
   @override

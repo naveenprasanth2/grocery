@@ -12,25 +12,31 @@ class UKChecklistProvider extends ChangeNotifier {
 
   List<ChecklistItem> get items => _items;
   List<String> get categories => _categories;
-  
+
   // Basic stats
   int get totalItems => _items.length;
-  int get completedTasks => _items.where((item) => 
-      item.type == ItemType.task && item.isChecked).length;
-  int get purchasedProducts => _items.where((item) => 
-      item.type == ItemType.product && item.isBought).length;
-  int get remainingTasks => _items.where((item) => 
-      item.type == ItemType.task && !item.isChecked).length;
-  int get remainingProducts => _items.where((item) => 
-      item.type == ItemType.product && !item.isBought).length;
-  
+  int get completedTasks => _items
+      .where((item) => item.type == ItemType.task && item.isChecked)
+      .length;
+  int get purchasedProducts => _items
+      .where((item) => item.type == ItemType.product && item.isBought)
+      .length;
+  int get remainingTasks => _items
+      .where((item) => item.type == ItemType.task && !item.isChecked)
+      .length;
+  int get remainingProducts => _items
+      .where((item) => item.type == ItemType.product && !item.isBought)
+      .length;
+
   // Financial tracking
-  double get totalBudget => _items.where((item) => 
-      item.type == ItemType.product).fold(0.0, (sum, item) => sum + item.totalCost);
-  double get spentAmount => _items.where((item) => 
-      item.type == ItemType.product && item.isBought).fold(0.0, (sum, item) => sum + item.totalCost);
+  double get totalBudget => _items
+      .where((item) => item.type == ItemType.product)
+      .fold(0.0, (sum, item) => sum + item.totalCost);
+  double get spentAmount => _items
+      .where((item) => item.type == ItemType.product && item.isBought)
+      .fold(0.0, (sum, item) => sum + item.totalCost);
   double get remainingBudget => totalBudget - spentAmount;
-  
+
   // Overall completion
   double get completionPercentage {
     if (totalItems == 0) return 0;
@@ -76,11 +82,14 @@ class UKChecklistProvider extends ChangeNotifier {
   Future<void> loadFromJson(String jsonString) async {
     try {
       final externalItems = JsonDataService.loadFromJsonString(jsonString);
-      final mergedItems = JsonDataService.mergeWithLocalData(_items, externalItems);
-      
+      final mergedItems = JsonDataService.mergeWithLocalData(
+        _items,
+        externalItems,
+      );
+
       _items.clear();
       _items.addAll(mergedItems);
-      
+
       // Update categories if new ones are found
       final newCategories = mergedItems.map((item) => item.category).toSet();
       for (final category in newCategories) {
@@ -88,7 +97,7 @@ class UKChecklistProvider extends ChangeNotifier {
           _categories.add(category);
         }
       }
-      
+
       await _saveToPrefs();
       notifyListeners();
     } catch (e) {
@@ -118,9 +127,11 @@ class UKChecklistProvider extends ChangeNotifier {
     }
   }
 
-  void addItem(String title, String category, {
-    String? notes, 
-    DateTime? dueDate, 
+  void addItem(
+    String title,
+    String category, {
+    String? notes,
+    DateTime? dueDate,
     bool isPriority = false,
     double price = 0.0,
     int quantity = 1,
@@ -155,12 +166,13 @@ class UKChecklistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateItem(String id, {
-    String? title, 
-    String? category, 
-    bool? isChecked, 
-    String? notes, 
-    DateTime? dueDate, 
+  void updateItem(
+    String id, {
+    String? title,
+    String? category,
+    bool? isChecked,
+    String? notes,
+    DateTime? dueDate,
     bool? isPriority,
     double? price,
     int? quantity,
@@ -201,9 +213,11 @@ class UKChecklistProvider extends ChangeNotifier {
   }
 
   void clearCompleted() {
-    _items.removeWhere((item) => 
-        (item.type == ItemType.task && item.isChecked) ||
-        (item.type == ItemType.product && item.isBought));
+    _items.removeWhere(
+      (item) =>
+          (item.type == ItemType.task && item.isChecked) ||
+          (item.type == ItemType.product && item.isBought),
+    );
     _saveToPrefs();
     notifyListeners();
   }
@@ -255,7 +269,7 @@ class UKChecklistProvider extends ChangeNotifier {
       return true;
     }).toList();
   }
-  
+
   List<String> get defaultCategories => [
     'Documents',
     'Housing',
@@ -267,10 +281,10 @@ class UKChecklistProvider extends ChangeNotifier {
     'Personal Items',
     'Utilities',
   ];
-  
+
   void populateWithDefaultItems() async {
     if (_items.isNotEmpty) return;
-    
+
     try {
       final defaultItems = await JsonDataService.loadDefaultData();
       _items.addAll(defaultItems);

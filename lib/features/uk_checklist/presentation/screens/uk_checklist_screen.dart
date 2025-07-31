@@ -96,16 +96,29 @@ class _UKChecklistScreenState extends State<UKChecklistScreen>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => AddChecklistItemDialog(
-        onItemAdded: (title, category, notes, dueDate, isPriority) {
-          final provider = context.read<UKChecklistProvider>();
-          provider.addItem(
-            title,
-            category,
-            notes: notes,
-            dueDate: dueDate,
-            isPriority: isPriority,
-          );
-        },
+        onItemAdded:
+            (
+              title,
+              category,
+              notes,
+              dueDate,
+              isPriority,
+              price,
+              quantity,
+              type,
+            ) {
+              final provider = context.read<UKChecklistProvider>();
+              provider.addItem(
+                title,
+                category,
+                notes: notes,
+                dueDate: dueDate,
+                isPriority: isPriority,
+                price: price,
+                quantity: quantity,
+                type: type,
+              );
+            },
       ),
     );
   }
@@ -164,9 +177,14 @@ class _UKChecklistScreenState extends State<UKChecklistScreen>
             children: [
               UKChecklistStatsCard(
                 totalItems: checklistProvider.totalItems,
-                completedItems: checklistProvider.completedItems,
-                remainingItems: checklistProvider.remainingItems,
+                completedTasks: checklistProvider.completedTasks,
+                purchasedProducts: checklistProvider.purchasedProducts,
+                remainingTasks: checklistProvider.remainingTasks,
+                remainingProducts: checklistProvider.remainingProducts,
                 completionPercentage: checklistProvider.completionPercentage,
+                totalBudget: checklistProvider.totalBudget,
+                spentAmount: checklistProvider.spentAmount,
+                remainingBudget: checklistProvider.remainingBudget,
               ),
               if (_isSearching)
                 UKSearchBar(

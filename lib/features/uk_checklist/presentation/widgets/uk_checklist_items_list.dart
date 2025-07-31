@@ -82,30 +82,82 @@ class UKChecklistItemsList extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: ListTile(
                   leading: Checkbox(
-                    value: item.isChecked,
+                    value: item.type == ItemType.task
+                        ? item.isChecked
+                        : item.isBought,
                     onChanged: (_) {
                       onToggleItem(item.id);
                     },
                   ),
-                  title: Text(
-                    item.title,
-                    style: TextStyle(
-                      decoration: item.isChecked
-                          ? TextDecoration.lineThrough
-                          : null,
-                      fontWeight: item.isPriority ? FontWeight.bold : null,
-                      color: item.isChecked ? Colors.grey : null,
-                    ),
+                  title: Row(
+                    children: [
+                      if (item.type == ItemType.product)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          margin: const EdgeInsets.only(right: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            '£${item.totalCost.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          style: TextStyle(
+                            decoration:
+                                (item.type == ItemType.task &&
+                                        item.isChecked) ||
+                                    (item.type == ItemType.product &&
+                                        item.isBought)
+                                ? TextDecoration.lineThrough
+                                : null,
+                            fontWeight: item.isPriority
+                                ? FontWeight.bold
+                                : null,
+                            color:
+                                (item.type == ItemType.task &&
+                                        item.isChecked) ||
+                                    (item.type == ItemType.product &&
+                                        item.isBought)
+                                ? Colors.grey
+                                : null,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Category: ${item.category}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            '${item.type == ItemType.task ? 'Task' : 'Product'} • ${item.category}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                          if (item.type == ItemType.product &&
+                              item.quantity > 1)
+                            Text(
+                              ' • Qty: ${item.quantity}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                        ],
                       ),
                       if (item.dueDate != null)
                         Padding(

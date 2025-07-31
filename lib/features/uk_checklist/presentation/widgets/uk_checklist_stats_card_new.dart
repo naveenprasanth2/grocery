@@ -81,13 +81,15 @@ class UKChecklistStatsCard extends StatelessWidget {
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isDone ? Colors.green.withOpacity(0.2) : theme.primaryColor.withOpacity(0.2),
+                    color: isDone
+                        ? Colors.green.withOpacity(0.2)
+                        : theme.primaryColor.withOpacity(0.2),
                   ),
                   child: Center(
                     child: Text(
                       '${completionPercentage.toStringAsFixed(0)}%',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold, 
+                        fontWeight: FontWeight.bold,
                         fontSize: 18.0,
                         color: isDone ? Colors.green : theme.primaryColor,
                       ),
@@ -105,7 +107,7 @@ class UKChecklistStatsCard extends StatelessWidget {
               ),
               minHeight: 6,
             ),
-            
+
             // Financial Overview
             if (totalBudget > 0) ...[
               const SizedBox(height: 16),
@@ -117,10 +119,7 @@ class UKChecklistStatsCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   const Text(
                     'Expense Tracking',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -139,14 +138,18 @@ class UKChecklistStatsCard extends StatelessWidget {
                         'Spent: £${spentAmount.toStringAsFixed(2)}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: spentAmount > totalBudget ? Colors.red : Colors.green,
+                          color: spentAmount > totalBudget
+                              ? Colors.red
+                              : Colors.green,
                         ),
                       ),
                       Text(
                         'Remaining: £${remainingBudget.toStringAsFixed(2)}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: remainingBudget < 0 ? Colors.red : Colors.grey[600],
+                          color: remainingBudget < 0
+                              ? Colors.red
+                              : Colors.grey[600],
                         ),
                       ),
                     ],
@@ -156,19 +159,21 @@ class UKChecklistStatsCard extends StatelessWidget {
                     height: 60,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: spentAmount > totalBudget 
-                          ? Colors.red.withOpacity(0.2) 
+                      color: spentAmount > totalBudget
+                          ? Colors.red.withOpacity(0.2)
                           : Colors.green.withOpacity(0.2),
                     ),
                     child: Center(
                       child: Text(
-                        totalBudget > 0 
+                        totalBudget > 0
                             ? '${(spentAmount / totalBudget * 100).toStringAsFixed(0)}%'
                             : '0%',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
-                          color: spentAmount > totalBudget ? Colors.red : Colors.green,
+                          color: spentAmount > totalBudget
+                              ? Colors.red
+                              : Colors.green,
                         ),
                       ),
                     ),
@@ -177,7 +182,9 @@ class UKChecklistStatsCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               LinearProgressIndicator(
-                value: totalBudget > 0 ? (spentAmount / totalBudget).clamp(0.0, 1.0) : 0,
+                value: totalBudget > 0
+                    ? (spentAmount / totalBudget).clamp(0.0, 1.0)
+                    : 0,
                 backgroundColor: Colors.grey.withOpacity(0.2),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   spentAmount > totalBudget ? Colors.red : Colors.green,

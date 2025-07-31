@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../providers/uk_checklist_provider.dart';
+import '../../../domain/entities/checklist_item.dart';
 import 'package:provider/provider.dart';
 
 class AddChecklistItemDialog extends StatefulWidget {
-  final Function(String, String, String?, DateTime?, bool) onItemAdded;
+  final Function(
+    String,
+    String,
+    String?,
+    DateTime?,
+    bool,
+    double,
+    int,
+    ItemType,
+  )
+  onItemAdded;
 
   const AddChecklistItemDialog({super.key, required this.onItemAdded});
 
@@ -15,9 +26,12 @@ class AddChecklistItemDialog extends StatefulWidget {
 class _AddChecklistItemDialogState extends State<AddChecklistItemDialog> {
   final _titleController = TextEditingController();
   final _notesController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _quantityController = TextEditingController(text: '1');
   String _selectedCategory = '';
   DateTime? _selectedDueDate;
   bool _isPriority = false;
+  ItemType _itemType = ItemType.task;
 
   @override
   void initState() {
@@ -40,6 +54,8 @@ class _AddChecklistItemDialogState extends State<AddChecklistItemDialog> {
   void dispose() {
     _titleController.dispose();
     _notesController.dispose();
+    _priceController.dispose();
+    _quantityController.dispose();
     super.dispose();
   }
 
@@ -78,17 +94,55 @@ class _AddChecklistItemDialogState extends State<AddChecklistItemDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Add New Task',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Text(
+              'Add New ${_itemType == ItemType.task ? 'Task' : 'Product'}',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
+
+            // Type Selection
+            Row(
+              children: [
+                Expanded(
+                  child: RadioListTile<ItemType>(
+                    title: const Text('Task'),
+                    value: ItemType.task,
+                    groupValue: _itemType,
+                    onChanged: (value) {
+                      setState(() {
+                        _itemType = value!;
+                      });
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+                Expanded(
+                  child: RadioListTile<ItemType>(
+                    title: const Text('Product'),
+                    value: ItemType.product,
+                    groupValue: _itemType,
+                    onChanged: (value) {
+                      setState(() {
+                        _itemType = value!;
+                      });
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Task',
-                border: OutlineInputBorder(),
-                hintText: 'Enter task name',
+              decoration: InputDecoration(
+                labelText: _itemType == ItemType.task
+                    ? 'Task Name'
+                    : 'Product Name',
+                border: const OutlineInputBorder(),
+                hintText: _itemType == ItemType.task
+                    ? 'Enter task name'
+                    : 'Enter product name',
               ),
               maxLines: 1,
               textCapitalization: TextCapitalization.sentences,
@@ -120,6 +174,42 @@ class _AddChecklistItemDialogState extends State<AddChecklistItemDialog> {
                 return null;
               },
             ),
+
+            // Price and Quantity for Products
+            if (_itemType == ItemType.product) ...[
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _priceController,
+                      decoration: const InputDecoration(
+                        labelText: 'Price (£)',
+                        border: OutlineInputBorder(),
+                        hintText: '0.00',
+                        prefixText: '£',
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: _quantityController,
+                      decoration: const InputDecoration(
+                        labelText: 'Quantity',
+                        border: OutlineInputBorder(),
+                        hintText: '1',
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
             const SizedBox(height: 15),
             TextField(
               controller: _notesController,
@@ -183,8 +273,10 @@ class _AddChecklistItemDialogState extends State<AddChecklistItemDialog> {
                   onPressed: () {
                     if (_titleController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter a task name'),
+                        SnackBar(
+                          content: Text(
+                            'Please enter a ${_itemType == ItemType.task ? 'task' : 'product'} name',
+                          ),
                         ),
                       );
                       return;
@@ -198,6 +290,13 @@ class _AddChecklistItemDialogState extends State<AddChecklistItemDialog> {
                       return;
                     }
 
+                    final price = _itemType == ItemType.product
+                        ? (double.tryParse(_priceController.text) ?? 0.0)
+                        : 0.0;
+                    final quantity = _itemType == ItemType.product
+                        ? (int.tryParse(_quantityController.text) ?? 1)
+                        : 1;
+
                     widget.onItemAdded(
                       _titleController.text.trim(),
                       _selectedCategory,
@@ -206,11 +305,16 @@ class _AddChecklistItemDialogState extends State<AddChecklistItemDialog> {
                           : _notesController.text.trim(),
                       _selectedDueDate,
                       _isPriority,
+                      price,
+                      quantity,
+                      _itemType,
                     );
 
                     Navigator.pop(context);
                   },
-                  child: const Text('ADD TASK'),
+                  child: Text(
+                    'ADD ${_itemType == ItemType.task ? 'TASK' : 'PRODUCT'}',
+                  ),
                 ),
               ],
             ),

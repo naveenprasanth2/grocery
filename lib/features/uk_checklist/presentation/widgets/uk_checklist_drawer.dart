@@ -36,13 +36,14 @@ class UKChecklistDrawer extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${checklistProvider.completedItems}/${checklistProvider.totalItems} Tasks Completed',
+                  '${checklistProvider.completedTasks + checklistProvider.purchasedProducts}/${checklistProvider.totalItems} Tasks Completed',
                   style: const TextStyle(color: Colors.white70, fontSize: 16),
                 ),
                 const SizedBox(height: 4),
                 LinearProgressIndicator(
                   value: checklistProvider.totalItems > 0
-                      ? checklistProvider.completedItems /
+                      ? (checklistProvider.completedTasks +
+                                checklistProvider.purchasedProducts) /
                             checklistProvider.totalItems
                       : 0,
                   backgroundColor: Colors.white24,
@@ -82,6 +83,23 @@ class UKChecklistDrawer extends StatelessWidget {
           }).toList(),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.upload_file),
+            title: const Text('Import JSON Data'),
+            onTap: () {
+              Navigator.pop(context);
+              _showImportDialog(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.download),
+            title: const Text('Export as JSON'),
+            onTap: () {
+              Navigator.pop(context);
+              _exportData(context);
+            },
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.cleaning_services_outlined),
             title: const Text('Clear Completed Tasks'),
             onTap: () {
@@ -107,6 +125,87 @@ class UKChecklistDrawer extends StatelessWidget {
               SizedBox(height: 10),
               Text('A checklist app to help you organize your move to the UK.'),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showImportDialog(BuildContext context) {
+    final TextEditingController jsonController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Import JSON Data'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: TextField(
+            controller: jsonController,
+            decoration: const InputDecoration(
+              labelText: 'Paste JSON data here',
+              border: OutlineInputBorder(),
+            ),
+            maxLines: 10,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('CANCEL'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (jsonController.text.isNotEmpty) {
+                try {
+                  await checklistProvider.loadFromJson(jsonController.text);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Data imported successfully!'),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error importing data: $e')),
+                  );
+                }
+              }
+            },
+            child: const Text('IMPORT'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _exportData(BuildContext context) {
+    final jsonData = checklistProvider.exportAsJson();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Export JSON Data'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SelectableText(
+            jsonData,
+            style: const TextStyle(fontFamily: 'monospace'),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('CLOSE'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Copy to clipboard functionality can be added here
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('JSON data ready to copy!')),
+              );
+            },
+            child: const Text('COPY'),
           ),
         ],
       ),

@@ -1,0 +1,102 @@
+[
+  {
+    "title": "Valid passport",
+    "category": "Documents",
+    "isPriority": true,
+    "type": "task",
+    "isChecked": false,
+    "isBought": false,
+    "price": 0.0,
+    "quantity": 1
+  },
+  {
+    "title": "UK visa documentation",
+    "category": "Documents",
+    "isPriority": true,
+    "type": "task",
+    "isChecked": false,
+    "isBought": false,
+    "price": 0.0,
+    "quantity": 1
+  },
+  {
+    "title": "Open UK bank account",
+    "category": "Finance",
+    "isPriority": true,
+    "type": "task",
+    "isChecked": false,
+    "isBought": false,
+    "price": 0.0,
+    "quantity": 1
+  },
+  {
+    "title": "Find accommodation",
+    "category": "Housing",
+    "isPriority": true,
+    "type": "task",
+    "isChecked": false,
+    "isBought": false,
+    "price": 0.0,
+    "quantity": 1
+  },
+  {
+    "title": "Register with NHS",
+    "category": "Healthcare",
+    "isPriority": true,
+    "type": "task",
+    "isChecked": false,
+    "isBought": false,
+    "price": 0.0,
+    "quantity": 1
+  },
+  {
+    "title": "UK power adapters",
+    "category": "Personal Items",
+    "isPriority": false,
+    "type": "product",
+    "isChecked": false,
+    "isBought": false,
+    "price": 15.0,
+    "quantity": 2
+  },
+  {
+    "title": "Travel insurance",
+    "category": "Finance",
+    "isPriority": false,
+    "type": "product",
+    "isChecked": false,
+    "isBought": false,
+    "price": 50.0,
+    "quantity": 1
+  },
+  {
+    "title": "International SIM card",
+    "category": "Utilities",
+    "isPriority": false,
+    "type": "product",
+    "isChecked": false,
+    "isBought": false,
+    "price": 20.0,
+    "quantity": 1
+  },
+  {
+    "title": "Suitcase",
+    "category": "Personal Items",
+    "isPriority": false,
+    "type": "product",
+    "isChecked": false,
+    "isBought": false,
+    "price": 80.0,
+    "quantity": 1
+  },
+  {
+    "title": "UK mobile phone plan",
+    "category": "Utilities",
+    "isPriority": false,
+    "type": "product",
+    "isChecked": false,
+    "isBought": false,
+    "price": 30.0,
+    "quantity": 1
+  }
+]
