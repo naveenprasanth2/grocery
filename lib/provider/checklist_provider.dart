@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:grocery/provider/title_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import '../models/models.dart';
 
 class CheckBoxModel extends ChangeNotifier {
   final List<TileItem> _items = [];
@@ -9,6 +9,13 @@ class CheckBoxModel extends ChangeNotifier {
 
   List<TileItem> get items => _items;
   int get count => _items.length;
+
+  double get totalCost =>
+      _items.fold(0.0, (sum, item) => sum + item.totalPrice);
+  double get completedCost => _items
+      .where((item) => item.isChecked)
+      .fold(0.0, (sum, item) => sum + item.totalPrice);
+  double get remainingCost => totalCost - completedCost;
 
   CheckBoxModel() {
     _loadFromPrefs();
@@ -31,8 +38,8 @@ class CheckBoxModel extends ChangeNotifier {
     }
   }
 
-  void addItem(String title) {
-    _items.add(TileItem(title: title));
+  void addItem(String title, {double price = 0.0, int quantity = 1}) {
+    _items.add(TileItem(title: title, price: price, quantity: quantity));
     _saveToPrefs();
     notifyListeners();
   }
@@ -43,10 +50,12 @@ class CheckBoxModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateItem(int index, String newTitle) {
+  void updateItem(int index, String newTitle, {double? price, int? quantity}) {
     _items[index] = TileItem(
       title: newTitle,
       isChecked: _items[index].isChecked,
+      price: price ?? _items[index].price,
+      quantity: quantity ?? _items[index].quantity,
     );
     _saveToPrefs();
     notifyListeners();
