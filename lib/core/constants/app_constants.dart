@@ -2,56 +2,62 @@ import 'package:flutter/material.dart';
 
 class AppConstants {
   // App Information
-  static const String appName = 'Smart Grocery';
-  static const String appVersion = '2.0.0';
+  static const String appName = 'UK Moving Checklist';
+  static const String appVersion = '1.0.0';
   static const String appDescription =
-      'A modern, feature-rich grocery shopping app with smart organization.';
+      'A comprehensive checklist app for organizing your move to the United Kingdom.';
 
   // Colors
-  static const Color primaryColor = Color(0xFF4CAF50);
+  static const Color primaryColor = Color(0xFF1976D2); // Royal Blue
   static const Color backgroundColor = Color(0xFFF8F8F8);
   static const Color cardColor = Colors.white;
 
   // Category Colors
   static final Map<String, Color> categoryColors = {
-    'Dairy': Colors.blue.shade600,
-    'Meat': Colors.red.shade600,
-    'Fruits': Colors.orange.shade600,
-    'Vegetables': Colors.green.shade600,
-    'Grains': Colors.amber.shade700,
-    'Beverages': Colors.purple.shade600,
-    'Other': Colors.grey.shade600,
+    'Documents': Colors.blue.shade600,
+    'Housing': Colors.green.shade600,
+    'Finance': Colors.purple.shade600,
+    'Healthcare': Colors.red.shade600,
+    'Employment': Colors.amber.shade700,
+    'Transportation': Colors.orange.shade600,
+    'Education': Colors.indigo.shade600,
+    'Personal Items': Colors.teal.shade600,
+    'Utilities': Colors.cyan.shade600,
+    'Social & Networking': Colors.deepPurple.shade600,
   };
 
   // Category Icons
   static const Map<String, IconData> categoryIcons = {
     'All': Icons.apps,
-    'Dairy': Icons.local_drink,
-    'Meat': Icons.set_meal,
-    'Fruits': Icons.apple,
-    'Vegetables': Icons.eco,
-    'Grains': Icons.grain,
-    'Beverages': Icons.coffee,
-    'Other': Icons.shopping_basket,
+    'Documents': Icons.description,
+    'Housing': Icons.home,
+    'Finance': Icons.account_balance,
+    'Healthcare': Icons.local_hospital,
+    'Employment': Icons.work,
+    'Transportation': Icons.commute,
+    'Education': Icons.school,
+    'Personal Items': Icons.luggage,
+    'Utilities': Icons.lightbulb,
+    'Social & Networking': Icons.people,
   };
 
-  // Grocery Item Suggestions
-  static const List<String> grocerySuggestions = [
-    'Milk',
-    'Bread',
-    'Eggs',
-    'Butter',
-    'Cheese',
-    'Yogurt',
-    'Chicken',
-    'Beef',
-    'Apples',
-    'Bananas',
-    'Oranges',
-    'Tomatoes',
-    'Onions',
-    'Potatoes',
-    'Carrots',
+  // UK Checklist Task Suggestions
+  static const List<String> taskSuggestions = [
+    'Passport',
+    'Visa',
+    'Birth Certificate',
+    'NHS Registration',
+    'Bank Account',
+    'National Insurance Number',
+    'Accommodation',
+    'Job Search',
+    'Transport Card',
+    'Mobile Phone Plan',
+    'Internet Setup',
+    'Shipping Items',
+    'Register with GP',
+    'School Application',
+    'CV/Resume Update',
     'Rice',
     'Pasta',
     'Olive Oil',
@@ -96,4 +102,28 @@ class AppConstants {
   static const double defaultBorderRadius = 12.0;
   static const double largeBorderRadius = 20.0;
   static const double smallBorderRadius = 8.0;
+
+  static const List<String> grocerySuggestions = [
+    'Milk',
+    'Bread',
+    'Eggs',
+    'Butter',
+    'Cheese',
+    'Yogurt',
+    'Chicken',
+    'Rice',
+    'Apples',
+    'Bananas',
+    'Tomatoes',
+    'Onions',
+    'Potatoes',
+    'Carrots',
+    'Spinach',
+    'Orange Juice',
+    'Coffee',
+    'Tea',
+    'Cereal',
+    'Pasta',
+    'Oil',
+  ];
 }

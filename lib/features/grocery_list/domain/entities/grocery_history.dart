@@ -6,19 +6,24 @@ class GroceryHistory {
   final DateTime date;
   final List<String> items;
 
-  GroceryHistory({required this.id, required this.name, required this.date, required this.items});
+  GroceryHistory({
+    required this.id,
+    required this.name,
+    required this.date,
+    required this.items,
+  });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'date': date.toIso8601String(),
-        'items': items,
-      };
+    'id': id,
+    'name': name,
+    'date': date.toIso8601String(),
+    'items': items,
+  };
 
   factory GroceryHistory.fromJson(Map<String, dynamic> json) => GroceryHistory(
-        id: json['id'],
-        name: json['name'],
-        date: DateTime.parse(json['date']),
-        items: (json['items'] as List).map((e) => e.toString()).toList(),
-      );
+    id: json['id'],
+    name: json['name'],
+    date: DateTime.parse(json['date']),
+    items: (json['items'] as List).map((e) => e.toString()).toList(),
+  );
 }

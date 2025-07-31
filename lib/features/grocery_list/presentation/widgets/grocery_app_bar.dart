@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:convert';
 
@@ -178,41 +177,6 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.largeBorderRadius),
         ),
-        title: Row(
-          children: [
-            Icon(Icons.qr_code_scanner, color: Colors.blue.shade600),
-            const SizedBox(width: 8),
-            const Text('Scan QR Code'),
-          ],
-        ),
-        content: SizedBox(
-          height: 250,
-          width: 250,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: QRView(
-                  key: GlobalKey(debugLabel: 'QR'),
-                  onQRViewCreated: (QRViewController controller) {
-                    controller.scannedDataStream.listen((scanData) {
-                      if (scanData.code != null) {
-                        Navigator.pop(context);
-                        _handleQRCodeScanned(context, scanData.code!);
-                      }
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Point camera at QR code to scan',
-                style: TextStyle(color: Colors.grey.shade600),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -239,21 +203,6 @@ class GroceryAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
     );
-  }
-
-  void _handleQRCodeScanned(BuildContext context, String qrData) {
-    try {
-      final Map<String, dynamic> data = json.decode(qrData);
-
-      if (data['type'] == 'grocery_list' && data['items'] != null) {
-        _importGroceryList(context, data);
-      } else {
-        _showQRResultDialog(context, qrData);
-      }
-    } catch (e) {
-      // Not a JSON, treat as regular text
-      _showQRResultDialog(context, qrData);
-    }
   }
 
   void _importGroceryList(BuildContext context, Map<String, dynamic> data) {
